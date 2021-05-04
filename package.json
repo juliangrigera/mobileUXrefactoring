@@ -1,0 +1,25 @@
+{
+  "name": "mobileuxrefactoring",
+  "version": "1.0.0",
+  "description": "MobileUX Refactoring on-demand",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juliangrigera/mobileUXrefactoring.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/juliangrigera/mobileUXrefactoring/issues"
+  },
+  "homepage": "https://github.com/juliangrigera/mobileUXrefactoring#readme"
+}
