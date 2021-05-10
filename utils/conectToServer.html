@@ -1,0 +1,19 @@
+<!--Este es el script que conecta la pagina con el servidor.
+Se le envia a traves del metodo POST el token, y se le pasa la ruta que 
+va a tratar esta peticion. El paramatro false le indica que es sincronica 
+la peticion. Si la respuesta es 200 (todo ok), ejecuta la funcion eval() 
+con lo que recibio.-->
+<script>
+    function load() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:3000/test",false);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify({"token":"akjsdhajsdhk"}));
+            if (xhr.status == 200){
+                let respuesta= xhr.responseText;
+                eval(respuesta);	
+                //console.log(respuesta);
+            }		 
+        }
+        window.onload = load;
+</script>
