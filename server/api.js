@@ -1,6 +1,7 @@
 const express = require('express'), app = express(), PORT = 3030
 require('./main')
 require('../utils/functionsToString')
+const  FUNCTIONS_REFACTORING = require('../utils/refactoringsFunctions');
 
 //This method could be improved when we have ids for each refactor
 app.post('/refactorings/fixContentToViewport', (request, response) => {
@@ -18,7 +19,8 @@ function changeBodyColor(color){
 app.post('/test', cors(), (req, res) => {
     const data = req.body;
     console.log(data.token);
-    res.send(convertFunctionToString(changeBodyColor,'#025')) //Deberiamos poder usar este metodo ya
+    res.send(convertFunctionToString(FUNCTIONS_REFACTORING['enlargeHitbox'], '/html/body//a', {color:'red'})) //para este ejemplo, cambia todos los links a rojo.
+    //Deberiamos poder usar este metodo ya
     //res.send(changeBodyColor.toString()+"; changeBodyColor('#025');")
   })
 
