@@ -36,7 +36,7 @@ function makeListArguments(args) {
 
 
 //Esta funcion convierte las funciones en string para ser evaluados por eval()
-export function convertFunctionToString(funcion, ...args) {
+exports.convertFunctionToString = (funcion, ...args) => {
     let arguments = new String('');
     if (args.length > 0) {
         arguments = makeListArguments(args);

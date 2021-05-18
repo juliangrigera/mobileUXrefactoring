@@ -1,14 +1,9 @@
 const express = require('express'), app = express(), PORT = 3030
-require('./main')
-require('../utils/functionsToString')
-const  FUNCTIONS_REFACTORING = require('../utils/refactoringsFunctions');
+require('./utils/functionsToString')
+var cors = require('cors')
+app.use(cors())
 
-//This method could be improved when we have ids for each refactor
-app.post('/refactorings/fixContentToViewport', (request, response) => {
-    let xpath = request.params.path
-    let codeForEval = fixContentToViewPort(xpath)
-    response.status(200).send(codeForEval)
-})
+const FUNCTIONS_REFACTORING = require('./utils/refactoringsFunctions');
 
 //Funcion de prueba, cambiar el colo del background
 function changeBodyColor(color){
