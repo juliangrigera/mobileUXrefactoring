@@ -1,0 +1,17 @@
+{
+  "username": "",
+  "password": "",
+  "token": "",
+  "urls": [
+    {
+      "url": "",
+      "refactors": [
+        {
+          "elements": [""],
+          "refactor": "",
+          "params": {}
+        }
+      ]
+    }
+  ]
+}
