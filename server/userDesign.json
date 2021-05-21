@@ -5,10 +5,10 @@
   "urls": [
     {
       "url": "",
-      "refactors": [
+      "refactorings": [
         {
           "elements": [""],
-          "refactor": "",
+          "refactoring": "",
           "params": {}
         }
       ]
