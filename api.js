@@ -1,10 +1,11 @@
-const express = require('express'), app = express(), PORT = 3030
+const express = require('express'), json = require('express'); app = express(), PORT = 3000
 require('./utils/functionsToString')
 var cors = require('cors')
 app.use(cors())
+app.use(json())
 
 const mongoose = require('mongoose')
-const {User} = require('./server/User')
+const User = require('./server/User')
 const connectionString = "mongodb+srv://proyecto-alumnos:B44XgKm0dsCKDls4@mobileuxrefactoring-tes.bloqb.mongodb.net/mUXr-test?retryWrites=true&w=majority"
 
 const FUNCTIONS_REFACTORING = require('./utils/refactoringsFunctions');
@@ -30,8 +31,10 @@ app.post('/connectiontest', cors(), async(req,res) => {
     useCreateIndex: true
   }).catch(e => console.error(e));
 
-  const user = await User.findOne({token: data.token}, 'urls')
-    .catch(e => console.error(e));
+  const users = await User.aggregate([{ $match: { 'token': data.token }}, { $unwind: "$urls"}, { $proyect: { 'urls': true}}])
+    .catch( e => {
+      console.log(e)
+    });
   console.log(user, typeof user)
   mongoose.connection.close();
 })
