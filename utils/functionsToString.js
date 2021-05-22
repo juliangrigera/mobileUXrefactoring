@@ -43,5 +43,5 @@ exports.convertFunctionToString = (funcion, ...args) => {
     }
     // retorna la funcion mas su llamada con los parametros. 
     //Ej: "function A(...){...}; A(p1, 'texto', true...)" 
-    return funcion.toString() + ";" + funcion.name + "(" + arguments + ")";
+    return funcion.toString() + ";" + funcion.name + "(" + arguments + ");";
 }

@@ -1,12 +1,11 @@
-const express = require('express'), json = require('express'); app = express(), PORT = 3000
-require('./utils/functionsToString')
+const express = require('express'), app = express(), PORT = 3000
+const {convertFunctionToString} = require('./utils/functionsToString')
+const {connect, disconnect} = require('./server/mongo')
 var cors = require('cors')
-app.use(cors())
-app.use(json())
-
-const mongoose = require('mongoose')
 const User = require('./server/User')
-const connectionString = "mongodb+srv://proyecto-alumnos:B44XgKm0dsCKDls4@mobileuxrefactoring-tes.bloqb.mongodb.net/mUXr-test?retryWrites=true&w=majority"
+
+app.use(cors())
+app.use(express.json())
 
 const FUNCTIONS_REFACTORING = require('./utils/refactoringsFunctions');
 
@@ -24,26 +23,36 @@ app.post('/test', cors(), (req, res) => {
 
 app.post('/connectiontest', cors(), async(req,res) => {
   const data = req.body;
-  mongoose.connect(connectionString, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true
-  }).catch(e => console.error(e));
+  connect()
 
-  const users = await User.aggregate([{ $match: { 'token': data.token }}, { $unwind: "$urls"}, { $proyect: { 'urls': true}}])
-    .catch( e => {
-      console.log(e)
-    });
-  console.log(user, typeof user)
-  mongoose.connection.close();
+  //fetch
+  const refactorings = await User.aggregate([
+    { $match: { 'token': data.token }}, 
+    { $unwind: "$urls" }, 
+    { $replaceRoot: { newRoot: "$urls" }}, 
+    { $match: { 'url': data.url }}, 
+    { $unwind: "$refactorings" },
+    { $replaceRoot: { newRoot: "$refactorings" }}
+  ]).catch( e => {
+    return console.error(e)
+  });
+  
+  console.log(refactorings[1].elements)
+  var stream = '';
+  for (r of refactorings){
+    console.log(r)
+    for (element of r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refactoring], element, r.params);
+  }
+
+  disconnect()
+  res.send(stream).status(200)
 })
 
 //Boceto de funcion final
 app.post('/refactor', cors(), async(req,res) => {
   const data = req.body;
   const refactorings = []; //fetch de array de refactors con {token: data.token}
-  const stream = '';
+  var stream = '';
   for (r in refactorings){
     for (element in r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refactoring], element, r.params);
   }

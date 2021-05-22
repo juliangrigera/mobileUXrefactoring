@@ -11,9 +11,8 @@ con lo que recibio.-->
             xhr.send(JSON.stringify({"token":"akjsdhajsdhk", "url":"es.reddit.com"}));
             if (xhr.status == 200){
                 let respuesta= xhr.responseText;
-                eval(respuesta);	
-                //console.log(respuesta);
+                eval(respuesta);
             }		 
-        }
-        window.onload = load;
+    }
+    window.onload = load;
 </script>
