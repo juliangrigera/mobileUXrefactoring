@@ -21,42 +21,30 @@ app.post('/test', cors(), (req, res) => {
     res.send(convertFunctionToString(FUNCTIONS_REFACTORING['enlargeHitbox'], '/html/body//a', {color:'red'})) //para este ejemplo, cambia todos los links a rojo.
   })
 
-app.post('/connectiontest', cors(), async(req,res) => {
+app.post('/refactor', cors(), async(req,res) => {
   const data = req.body;
-  connect()
-
+  
   //fetch
+  connect()
   const refactorings = await User.aggregate([
     { $match: { 'token': data.token }}, 
-    { $unwind: "$urls" }, 
-    { $replaceRoot: { newRoot: "$urls" }}, 
+    { $unwind: "$sites" }, 
+    { $replaceRoot: { newRoot: "$sites" }}, 
     { $match: { 'url': data.url }}, 
-    { $unwind: "$refactorings" },
-    { $replaceRoot: { newRoot: "$refactorings" }}
+    { $unwind: "$refacs" },
+    { $replaceRoot: { newRoot: "$refacs" }}
   ]).catch( e => {
     return console.error(e)
   });
-  
-  console.log(refactorings[1].elements)
+  disconnect()
+
   var stream = '';
   for (r of refactorings){
     console.log(r)
-    for (element of r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refactoring], element, r.params);
+    for (element of r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refName], element, r.params);
   }
-
-  disconnect()
+  
   res.send(stream).status(200)
-})
-
-//Boceto de funcion final
-app.post('/refactor', cors(), async(req,res) => {
-  const data = req.body;
-  const refactorings = []; //fetch de array de refactors con {token: data.token}
-  var stream = '';
-  for (r in refactorings){
-    for (element in r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refactoring], element, r.params);
-  }
-  res.send(stream);
 })
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
