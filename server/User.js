@@ -14,11 +14,10 @@ const siteSchema = new Schema({
 const userSchema = new Schema({
     username: String,
     password: String,
-    token: String
+    token: String,
+    sites: [siteSchema]
 })
 
 const User = model('User', userSchema)
 
 module.exports = User
-
-// sites: [siteSchema]

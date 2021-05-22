@@ -2,13 +2,13 @@
   "username": "",
   "password": "",
   "token": "",
-  "urls": [
+  "sites": [
     {
       "url": "",
-      "refactorings": [
+      "refacs": [
         {
           "elements": [""],
-          "refactoring": "",
+          "refName": "",
           "params": {}
         }
       ]
