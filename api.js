@@ -7,13 +7,7 @@ const User = require('./server/User')
 app.use(cors())
 app.use(express.json())
 
-const FUNCTIONS_REFACTORING = require('./utils/refactoringsFunctions');
-
-//Funcion de prueba, cambiar el colo del background
-function changeBodyColor(color){
-    //console.log(color);
-    document.body.style.backgroundColor= color;
-  }
+const {FUNCTIONS_REFACTORING, INITIAL_FUNCTIONS} = require('./utils/refactoringsFunctions');
 
 app.post('/test', cors(), (req, res) => {
     const data = req.body;
@@ -23,7 +17,6 @@ app.post('/test', cors(), (req, res) => {
 
 app.post('/refactor', cors(), async(req,res) => {
   const data = req.body;
-  
   //fetch
   connect()
   const refactorings = await User.aggregate([
@@ -39,11 +32,16 @@ app.post('/refactor', cors(), async(req,res) => {
   disconnect()
 
   var stream = '';
+
+  INITIAL_FUNCTIONS.forEach( func => {
+    stream += func.toString()
+  });
+
   for (r of refactorings){
     console.log(r)
     for (element of r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refName], element, r.params);
   }
-  
+  console.log(stream);
   res.send(stream).status(200)
 })
 
