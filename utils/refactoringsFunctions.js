@@ -69,6 +69,48 @@ const FUNCTIONS_REFACTORING = {
         element.style.background = newBackgroundColor;
         makeButton(element);
         element.innerHTML = capitalize(element);
+    },
+    'reduceText': function reduceText(pathDom, porcentage) {
+        // Obtengo los <p> del path 
+        var pList = pathsElements(pathDom + '//p');
+        //Necesito obtener el total de caracteres de los parrafos.
+        var fullLength = 0;
+        pList.forEach(elem => {
+            fullLength += elem.innerText.length;
+        });
+        var sizeTextPermitted = Math.round((porcentage["porcentage"] * fullLength) / 100); // cantidad de caracteres permitidos mostrar.
+
+        // debo calcular en que <p> cortar el documento.
+        var pNum = 0;
+        var sumLength = pList[pNum].innerText.length;
+        while (sumLength < sizeTextPermitted) {
+            pNum++;
+            sumLength += pList[pNum].innerText.length;
+        }
+
+        var tagPBeforeCut =  pList[pNum].innerHTML;// guardo el <p> original antes de cortarlo
+        //Corto el texto.
+        if (pNum > 0) {
+            pList[pNum].innerText = pList[pNum].innerText.slice(0, sumLength - sizeTextPermitted);
+        } else {
+            pList[pNum].innerText = pList[pNum].innerText.slice(0, sizeTextPermitted);
+        }
+
+        //obtengo los <p> del arreglo que le siguen al que se corto y los oculto.
+        var subPList = pList.slice(pNum + 1);
+        applyStyleChanges(subPList, { 'display': 'none' })
+
+        //Creo el link del final y lo añado
+        var link=document.createElement('a');
+        //Le agrego un Listener para que cuando se haga click muestre el texto completo
+        link.addEventListener("click", function() {
+            applyStyleChanges(subPList, {'display':'block'});
+            pList[pNum].innerHTML = tagPBeforeCut;
+            this.style.display = 'none';
+        });
+        link.innerHTML = " Leer más..."
+        pList[pNum].appendChild(link);
+
     }
 }
 
