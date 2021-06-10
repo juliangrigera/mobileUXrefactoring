@@ -111,6 +111,31 @@ const FUNCTIONS_REFACTORING = {
         link.innerHTML = " Leer más..."
         pList[pNum].appendChild(link);
 
+    },
+    'replaceLabelforPlaceholder': function replaceLabelforPlaceholder(pathDom){
+        //Obtener los labels del formulario
+        var labels = pathsElements(pathDom+'//label');
+
+        //Genero un map donde el valor de for es la clave y el texto de este es el valor 
+        var mapLabels = new Map();
+        labels.forEach( label => {
+            mapLabels.set(label.attributes["for"].value, label.textContent)
+        });
+        //Escondo los labes.
+        applyStyleChanges(labels, { 'display': 'none' })
+
+        //Obtengo los inputs del formulario
+        var inputs = pathsElements(pathDom+'//input');
+
+        // Como el atributo "for" del label hace match con el id del input,
+        // busco los inputs con ese id y modifico su placeholder.
+        inputs.forEach( input => {
+            if(mapLabels.get(input.getAttribute('id'))!= undefined){
+                input.setAttribute("placeholder", mapLabels.get(input.attributes["id"].value))
+            }
+        });
+        //Limitaciones: tiene que haber un "for" en el label. Queda pendiente por ahora, el caso de 
+        // q no exista un for para el input. 
     }
 }
 
