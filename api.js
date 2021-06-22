@@ -43,8 +43,7 @@ app.post('/refactor', cors(), async(req,res) => {ç
 
 //Creates a new refactoring
 app.post('/:token', cors(), async(req,res) => {
-  //Request contains an url, a refactoring name, a list of xpaths and an object with parameters
-  res.status(200).end();
+  //No estaria pudiendo hacer andar esto, voy a tener que refactorizar la db a como hablamos
 })
 
 async function getRefactorings({token,url}){
