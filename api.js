@@ -1,4 +1,4 @@
-const express = require('express'), app = express(), PORT = 3000
+const express = require('express'), app = express(), PORT = 3001
 const {convertFunctionToString} = require('./utils/functionsToString')
 const {connect, disconnect} = require('./server/mongo')
 var cors = require('cors')
@@ -62,5 +62,11 @@ async function getRefactorings({token,url}){
 
   return refactorings;
 }
+
+app.get('/users', cors(), (req,res) => {
+  res.json({
+    "clave": "prueba"
+  })
+})
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
