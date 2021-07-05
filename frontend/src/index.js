@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Users from './components/users/User';
 import Layout from './components/layout/Layout';
+import Login from './components/forms/Login';
 
 
 
@@ -14,6 +15,7 @@ ReactDOM.render(
         <Switch>
           <Route exact path="/" component={Layout} />
           <Route path="/user" component={Users} />
+          <Route path="/login" component={Login} />
         </Switch>
       </BrowserRouter>
 
