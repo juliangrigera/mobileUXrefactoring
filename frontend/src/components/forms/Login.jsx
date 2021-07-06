@@ -16,7 +16,6 @@ const Login = () => {
             ...datos,
             [event.target.name]: event.target.value
         })
-        console.log(event)
     }
 
     const handleSubmit = async (event) => {
@@ -40,6 +39,9 @@ const Login = () => {
             localStorage.setItem('token', body.token); //guardo el token en el localstorage
             history.replace('./user')
         }
+        /*else{
+            indicar el motivo de error
+        }*/
         console.log(body.token);
     }
 
