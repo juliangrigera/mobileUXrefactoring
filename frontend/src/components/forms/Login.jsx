@@ -37,7 +37,8 @@ const Login = () => {
         }
         if(body.success){
             localStorage.setItem('token', body.token); //guardo el token en el localstorage
-            history.replace('./user')
+            localStorage.setItem('usertoken',  body.userToken) //guardo el token de usuario (el personal)
+            history.replace('./user/'+body.userToken)
         }
         /*else{
             indicar el motivo de error
