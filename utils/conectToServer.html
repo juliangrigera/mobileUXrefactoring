@@ -4,11 +4,12 @@ va a tratar esta peticion. El paramatro false le indica que es sincronica
 la peticion. Si la respuesta es 200 (todo ok), ejecuta la funcion eval() 
 con lo que recibio.-->
 <script>
+    let userToken = "juan2021"
     function load() {
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://localhost:3000/refactor",false);
+            xhr.open("GET", "http://localhost:3000/refactor/" + userToken, false);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhr.send(JSON.stringify({"token":"juan2021"}));
+            xhr.send();
             if (xhr.status == 200){
                 let respuesta= xhr.responseText;
                 eval(respuesta);

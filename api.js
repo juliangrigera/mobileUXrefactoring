@@ -39,6 +39,7 @@ function authenticateToken(req, res, next) {
   })
 }
 
+//Authenticates a user attempting to log-in, fetches their userToken and genrates an access token
 app.post('/authenticate', cors(), async (req, res) => {
   const userTemp = await getUser(req.body.username, req.body.password)
   if (userTemp != false) {
@@ -62,12 +63,11 @@ app.post('/authenticate', cors(), async (req, res) => {
   }
 })
 
-
-//Applies refactorings for a user token
-app.post('/refactor', cors(), async (req, res) => {
+//Gets eval code to apply refactorings for a user token
+app.get('/refactor/:userToken', cors(), async (req, res) => {
   //Request contains a user token
   const data = req.body;
-  const refactorings = await getRefactorings(data);
+  const refactorings = await getRefactorings(req.params.userToken);
 
   //Forms string with code for eval function
   var stream = '';
@@ -80,13 +80,10 @@ app.post('/refactor', cors(), async (req, res) => {
   res.send(stream).status(200).end();
 })
 
-//Fetches refactorings to display for a token
-app.post('/refactorings', cors(), async (req, res) => {
-  //Request contains a user token
-  const data = req.body;
-  const refactorings = await getRefactorings(data);
-
-  res.send(refactorings).status(200).end();
+//Gets all the refactorings for a user token
+app.get('/refactorings/:userToken', authenticateToken, cors(), async (req, res) => {
+  const refactorings = await getRefactorings(req.params.userToken);
+  res.json(refactorings).status(200).end();
 })
 
 //Creates a new refactoring, taking a user token by params and the refactoring in the request
@@ -99,7 +96,7 @@ app.post('/refactorings/:userToken', cors(), async (req, res) => {
   })
   connect()
   await User.findOneAndUpdate(
-    { token: req.params.userToken },
+    { userToken: req.params.userToken },
     { $push: { refactorings: newRefactoring } },
     (err, suc) => {
       if (err) {
@@ -114,10 +111,20 @@ app.post('/refactorings/:userToken', cors(), async (req, res) => {
   )
 })
 
-async function getRefactorings({ token }) {
+//Gets the user data for a given token
+app.get('/users/:userToken', authenticateToken, cors(), async (req, res) => {
+  //const refactorings = await getRefactorings(req.params.userToken);
+  console.log(req.params.userToken)
+  const user = await getUserByToken(req.params.userToken)
+  res.json(user[0]).status(200).end();
+})
+
+
+/*---Utility---*/
+async function getRefactorings( userToken ) {
   connect();
   const refactorings = await User.aggregate([
-    { $match: { 'token': token } },
+    { $match: { 'userToken': userToken } },
     { $unwind: "$refactorings" },
     { $replaceRoot: { newRoot: "$refactorings" } }
   ]).catch(e => {
@@ -128,27 +135,12 @@ async function getRefactorings({ token }) {
   return refactorings;
 }
 
-app.get('/refactorings/:userToken', authenticateToken, cors(), async (req, res) => {
-  const refactorings = await getRefactorings(req.params.userToken);
-  res.json(refactorings).status(200).end();
-
-})
-
-app.get('/users/:userToken', authenticateToken, cors(), async (req, res) => {
-  //const refactorings = await getRefactorings(req.params.userToken);
-  console.log(req.params.userToken)
-  const user = await getUserByToken(req.params.userToken)
-  res.json(user[0]).status(200).end();
-
-})
-
 async function getUserByToken(token) {
   connect();
   const user = await User.find({ 'userToken' : token }).catch(() => { user = false })
   disconnect();
   return user;
 }
-
 
 async function getUser(username, password) {
   connect();
@@ -158,5 +150,3 @@ async function getUser(username, password) {
 }
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
-
-
