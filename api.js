@@ -51,6 +51,7 @@ app.post('/authenticate', cors(), async (req, res) => {
     res.json({
       mensaje: 'Autenticación correcta',
       token: token,
+      userToken: user.userToken,
       success: true
     });
   } else {
@@ -62,9 +63,9 @@ app.post('/authenticate', cors(), async (req, res) => {
 })
 
 
-//Applies refactorings for a token + an url (will be changed)
+//Applies refactorings for a user token
 app.post('/refactor', cors(), async (req, res) => {
-  //Request contains a user token and an url
+  //Request contains a user token
   const data = req.body;
   const refactorings = await getRefactorings(data);
 
@@ -79,30 +80,46 @@ app.post('/refactor', cors(), async (req, res) => {
   res.send(stream).status(200).end();
 })
 
-//Fetches refactorings to display for a token + url (will be changed)
-app.post('/refactor', cors(), async (req, res) => {
-  ç
-  //Request contains a user token and an url
+//Fetches refactorings to display for a token
+app.post('/refactorings', cors(), async (req, res) => {
+  //Request contains a user token
   const data = req.body;
   const refactorings = await getRefactorings(data);
 
   res.send(refactorings).status(200).end();
 })
 
-//Creates a new refactoring
-app.post('/:token', cors(), async (req, res) => {
-  //No estaria pudiendo hacer andar esto, voy a tener que refactorizar la db a como hablamos
+//Creates a new refactoring, taking a user token by params and the refactoring in the request
+app.post('/refactorings/:userToken', cors(), async (req, res) => {
+  const data = req.body;
+  let newRefactoring = new Refactoring({
+    refName: data.refName,
+    elements: data.elements,
+    params: data.params
+  })
+  connect()
+  await User.findOneAndUpdate(
+    { token: req.params.userToken },
+    { $push: { refactorings: newRefactoring } },
+    (err, suc) => {
+      if (err) {
+        console.log(err)
+        disconnect()
+        res.status(300).end()
+      } else {
+        disconnect()
+        res.send(suc).status(200).end()
+      }
+    }
+  )
 })
 
-async function getRefactorings({ token, url }) {
+async function getRefactorings({ token }) {
   connect();
   const refactorings = await User.aggregate([
     { $match: { 'token': token } },
-    { $unwind: "$sites" },
-    { $replaceRoot: { newRoot: "$sites" } },
-    { $match: { 'url': url } },
-    { $unwind: "$refacs" },
-    { $replaceRoot: { newRoot: "$refacs" } }
+    { $unwind: "$refactorings" },
+    { $replaceRoot: { newRoot: "$refactorings" } }
   ]).catch(e => {
     return console.error(e);
   });

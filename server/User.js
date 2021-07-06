@@ -16,7 +16,7 @@ const refactoringSchema = new Schema({
 const userSchema = new Schema({
   username: String,
   password: String,
-  token: String,
+  userToken: String,
   url: String,
   refactorings: [refactoringSchema]
 })
