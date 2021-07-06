@@ -128,11 +128,27 @@ async function getRefactorings({ token }) {
   return refactorings;
 }
 
-app.get('/users', authenticateToken, cors(), async (req, res) => {
-  res.json({
-    "clave": "prueba"
-  })
+app.get('/refactorings/:userToken', authenticateToken, cors(), async (req, res) => {
+  const refactorings = await getRefactorings(req.params.userToken);
+  res.json(refactorings).status(200).end();
+
 })
+
+app.get('/users/:userToken', authenticateToken, cors(), async (req, res) => {
+  //const refactorings = await getRefactorings(req.params.userToken);
+  console.log(req.params.userToken)
+  const user = await getUserByToken(req.params.userToken)
+  res.json(user[0]).status(200).end();
+
+})
+
+async function getUserByToken(token) {
+  connect();
+  const user = await User.find({ 'userToken' : token }).catch(() => { user = false })
+  disconnect();
+  return user;
+}
+
 
 async function getUser(username, password) {
   connect();
