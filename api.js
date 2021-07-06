@@ -1,9 +1,9 @@
 const express = require('express'), app = express(), PORT = 3001
-const {convertFunctionToString} = require('./utils/functionsToString')
-const {connect, disconnect} = require('./server/mongo')
+const { convertFunctionToString } = require('./utils/functionsToString')
+const { connect, disconnect } = require('./server/mongo')
 var cors = require('cors')
 const User = require('./server/User')
-const {FUNCTIONS_REFACTORING, INITIAL_FUNCTIONS} = require('./utils/refactoringsFunctions')
+const { FUNCTIONS_REFACTORING, INITIAL_FUNCTIONS } = require('./utils/refactoringsFunctions')
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
 
@@ -39,12 +39,12 @@ function authenticateToken(req, res, next) {
   })
 }
 
-app.post('/authenticate', cors(), (req, res) => {
-  console.log(req)
-  if (req.body.username === "AleValdez" && req.body.password === "123456") {
-    const user = req.body.username;
+app.post('/authenticate', cors(), async (req, res) => {
+  const userTemp = await getUser(req.body.username, req.body.password)
+  if (userTemp != false) {
+    const user = userTemp[0];
     const payload = {
-      usuario : user
+      usuario: user.username
     };
     console.log(user)
     const token = generateAccessToken(payload);
@@ -54,22 +54,24 @@ app.post('/authenticate', cors(), (req, res) => {
       success: true
     });
   } else {
-    res.json({ mensaje: "Usuario o contraseña incorrectos",
-              success: false })
+    res.json({
+      mensaje: "Usuario o contraseña incorrectos",
+      success: false
+    })
   }
 })
 
 
 //Applies refactorings for a token + an url (will be changed)
-app.post('/refactor', cors(), async(req,res) => {
+app.post('/refactor', cors(), async (req, res) => {
   //Request contains a user token and an url
   const data = req.body;
   const refactorings = await getRefactorings(data);
 
   //Forms string with code for eval function
   var stream = '';
-  INITIAL_FUNCTIONS.forEach( func => stream += func.toString());
-  for (r of refactorings){
+  INITIAL_FUNCTIONS.forEach(func => stream += func.toString());
+  for (r of refactorings) {
     for (element of r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refName], element, r.params);
   }
   console.log(stream);
@@ -78,7 +80,8 @@ app.post('/refactor', cors(), async(req,res) => {
 })
 
 //Fetches refactorings to display for a token + url (will be changed)
-app.post('/refactor', cors(), async(req,res) => {ç
+app.post('/refactor', cors(), async (req, res) => {
+  ç
   //Request contains a user token and an url
   const data = req.body;
   const refactorings = await getRefactorings(data);
@@ -87,20 +90,20 @@ app.post('/refactor', cors(), async(req,res) => {ç
 })
 
 //Creates a new refactoring
-app.post('/:token', cors(), async(req,res) => {
+app.post('/:token', cors(), async (req, res) => {
   //No estaria pudiendo hacer andar esto, voy a tener que refactorizar la db a como hablamos
 })
 
-async function getRefactorings({token,url}){
+async function getRefactorings({ token, url }) {
   connect();
   const refactorings = await User.aggregate([
-    { $match: { 'token': token }}, 
-    { $unwind: "$sites" }, 
-    { $replaceRoot: { newRoot: "$sites" }}, 
-    { $match: { 'url': url }}, 
+    { $match: { 'token': token } },
+    { $unwind: "$sites" },
+    { $replaceRoot: { newRoot: "$sites" } },
+    { $match: { 'url': url } },
     { $unwind: "$refacs" },
-    { $replaceRoot: { newRoot: "$refacs" }}
-  ]).catch( e => {
+    { $replaceRoot: { newRoot: "$refacs" } }
+  ]).catch(e => {
     return console.error(e);
   });
   disconnect();
@@ -108,28 +111,16 @@ async function getRefactorings({token,url}){
   return refactorings;
 }
 
-app.get('/users', authenticateToken, cors(), async(req,res) => {
-  const u = await getUser("juan_refactor", "12341234")
-  console.log(u);
+app.get('/users', authenticateToken, cors(), async (req, res) => {
   res.json({
     "clave": "prueba"
   })
 })
 
-async function getUser({username,password}){
+async function getUser(username, password) {
   connect();
-  const user = await User.aggregate([
-    { $match: { 'username': username }}, 
-    { $unwind: "$username" }, 
-    { $replaceRoot: { newRoot: "$username" }}, 
-    { $match: { 'password': password }}, 
-    { $unwind: "$password" },
-    { $replaceRoot: { newRoot: "$password" }}
-  ]).catch( e => {
-    return console.error(e);
-  });
+  const user = await User.find({ 'username': username, 'password': password }).catch(() => { user = false })
   disconnect();
-
   return user;
 }
 
