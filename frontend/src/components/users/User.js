@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 //import { useHistory } from 'react-router';
-
+import UserRefactoring from "./UserRefactorings";
 
 function Users() {
-    const [users, setUsers] = useState([]);
+    const [user, setUsers] = useState([]);
     //const history = useHistory();
     useEffect(() => {
         getData().then(data => setUsers(data)).catch(e => console.log(e))
     }, [])
     const getData = async () => {
-        console.log(localStorage.getItem('token'));
-        const response = await fetch('/users', {
+        //console.log(localStorage.getItem('token'));
+        const response = await fetch('/users/'+localStorage.getItem('usertoken'), {
             headers:{"authorization": localStorage.getItem('token')}
         });
         const body = await response.json();
-        console.log(body);
+        //console.log(body);
         if (response.status !== 200) {
             throw Error(body.message)
         }
@@ -22,7 +22,8 @@ function Users() {
     };
 
     return (<div><ul>
-        <li>{users["clave"]}</li></ul>
+        <li>{user.username}</li></ul>
+        <UserRefactoring />
     </div>)
 }
 
