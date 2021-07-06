@@ -1,21 +1,24 @@
 const {model, Schema} = require('mongoose')
 
-const refactoringSchema = new Schema({
-    elements: [String],
-    refName: String,
-    params: Object
-  })
+const versionSchema = new Schema({
+  name: String,
+  description: String,
+  qrUrl: String,
+  tag: String
+})
 
-const siteSchema = new Schema({
-    url: String,
-    refacs: [refactoringSchema]
-  })
+const refactoringSchema = new Schema({
+  refName: String,
+  elements: [String],
+  params: Object
+})
 
 const userSchema = new Schema({
-    username: String,
-    password: String,
-    token: String,
-    sites: [siteSchema]
+  username: String,
+  password: String,
+  token: String,
+  url: String,
+  refactorings: [refactoringSchema]
 })
 
 const User = model('User', userSchema)
