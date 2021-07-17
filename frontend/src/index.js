@@ -3,10 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import Users from './components/users/User';
 import Layout from './components/layout/Layout';
 import Login from './components/forms/Login';
-
+import 'bootstrap/dist/css/bootstrap.min.css';
+import RefactoringPage from './components/pages/Refactorings';
+import "./components/utils/css/prism.css";
 
 
 ReactDOM.render(
@@ -14,8 +15,9 @@ ReactDOM.render(
      <BrowserRouter>
         <Switch>
           <Route exact path="/" component={Layout} />
-          <Route path="/user" component={Users} />
+          <Route path="/user" component={Layout} />
           <Route path="/login" component={Login} />
+          <Route path="/refactorings" component={RefactoringPage} />
         </Switch>
       </BrowserRouter>
 

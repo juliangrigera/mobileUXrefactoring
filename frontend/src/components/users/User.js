@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState } from "react";
+import {BDiv} from 'bootstrap-4-react';
 //import { useHistory } from 'react-router';
-import UserRefactoring from "./UserRefactorings";
 
 function Users() {
     const [user, setUsers] = useState([]);
@@ -21,10 +21,12 @@ function Users() {
         return body;
     };
 
-    return (<div><ul>
-        <li>{user.username}</li></ul>
-        <UserRefactoring />
-    </div>)
+    return (
+        <BDiv mt="5" >
+            <h1 className="text-center">Hola!!!</h1>
+            <p className="text-center">Bienvenido <span className="font-weight-bold">{user.username}</span></p>
+        </BDiv>
+)
 }
 
 export default Users;
