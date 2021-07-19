@@ -84,17 +84,18 @@ app.get('/refactorings/:userToken', authenticateToken, cors(), async (req, res) 
 })
 
 //Creates a new refactoring, taking a user token by params and the refactoring in the request
-app.post('/refactorings/:userToken', cors(), async (req, res) => {
+app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res) => {
   const data = req.body;
-  let newRefactoring = new Refactoring({
+  console.log(data);/*
+  let newRefactoring = new Refactoring({ //falta crear la clase
     refName: data.refName,
     elements: data.elements,
     params: data.params
-  })
+  })*/
   connect()
   await User.findOneAndUpdate(
     { userToken: req.params.userToken },
-    { $push: { refactorings: newRefactoring } },
+    { $push: { refactorings: data } }, // por eso le mando directamente data
     (err, suc) => {
       if (err) {
         console.log(err)
