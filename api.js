@@ -30,11 +30,8 @@ function authenticateToken(req, res, next) {
 
   jwt.verify(token, process.env.TOKEN_SECRET.toString(), (err, user) => {
     console.log(err)
-
     if (err) return res.sendStatus(403)
-
     req.user = user
-
     next()
   })
 }
@@ -109,6 +106,10 @@ app.post('/refactorings/:userToken', cors(), async (req, res) => {
       }
     }
   )
+})
+
+app.post('/updateRefactoring', authenticateToken, cors(), async (req,res) => {
+  console.log(req.body);
 })
 
 //Gets the user data for a given token
