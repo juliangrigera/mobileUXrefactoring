@@ -5,10 +5,15 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Layout from './components/layout/Layout';
 import Login from './components/forms/Login';
+
+//UTILS
 import 'bootstrap/dist/css/bootstrap.min.css';
-import RefactoringPage from './components/pages/Refactorings';
 import "./components/utils/css/prism.css";
 import PrivateRoute from './components/utils/PrivateRoute';
+
+//PAGES
+import AddRefactoringPage from './components/pages/AddRefactoring';
+import RefactoringPage from './components/pages/Refactorings';
 
 
 ReactDOM.render(
@@ -20,6 +25,7 @@ ReactDOM.render(
           <Route path="/login" component={Login} />
           </Switch>
           <PrivateRoute path="/refactorings" component={RefactoringPage} />
+          <PrivateRoute path="/addRefactoring" component={AddRefactoringPage} />
       </BrowserRouter>
 
   </React.StrictMode>,
