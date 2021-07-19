@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col } from 'bootstrap-4-react';
+import { Container, Row, Col, Button } from 'bootstrap-4-react';
 import { BsTrash, BsPencil } from "react-icons/bs";
 import Loader from "react-loader-spinner";
+import ModalUpdateRefactoring from "../modals/ModalUpdateRefactoring";
 
 
 function UserRefactoring(props) {
@@ -10,6 +11,12 @@ function UserRefactoring(props) {
         elements: [String],
         params: Object
     }]);
+
+    const [refactoring, setRefactoring] = useState({
+        refName: "",
+        elements: [String],
+        params: Object
+    });
     //const history = useHistory();
     useEffect(() => {
         getData().then(data => setRefactorings(data)).catch(e => console.log(e))
@@ -33,12 +40,14 @@ function UserRefactoring(props) {
         backgroundColor: '#f5f5f5'
     }
 
+
     const showRefactoring = (refactorings) => {
+        console.log(refactorings);
         const listRefactorings = refactorings.map((refactoring) =>
             <Container style={boxStyle} border mt="4">
                 <Row bg="dark" text="white" p='2'>
                     <Col sm="10" className="text-center"><span className="font-weight-bold ">{refactoring.refName}</span></Col>
-                    <Col sm="1" className="text-right"><BsPencil /></Col>
+                    <Col sm="1" className="text-right"> <Button primary data-toggle="modal" data-target="#updateForm" onClick={() => setRefactoring(refactoring)}><BsPencil /></Button></Col>
                     <Col sm="1" className="text-center"><BsTrash /></Col>
                 </Row>
                 <Row p='2'>
@@ -66,9 +75,10 @@ function UserRefactoring(props) {
                 color="#00BFFF"
                 height={100}
                 width={100}
-                timeout={3000} //3 secs
             />
-    }</div>)
+    }
+    <ModalUpdateRefactoring refactoring={refactoring} />
+    </div>)
 }
 
 export default UserRefactoring
