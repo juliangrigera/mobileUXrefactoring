@@ -8,6 +8,7 @@ import Login from './components/forms/Login';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import RefactoringPage from './components/pages/Refactorings';
 import "./components/utils/css/prism.css";
+import PrivateRoute from './components/utils/PrivateRoute';
 
 
 ReactDOM.render(
@@ -17,8 +18,8 @@ ReactDOM.render(
           <Route exact path="/" component={Layout} />
           <Route path="/user" component={Layout} />
           <Route path="/login" component={Login} />
-          <Route path="/refactorings" component={RefactoringPage} />
-        </Switch>
+          </Switch>
+          <PrivateRoute path="/refactorings" component={RefactoringPage} />
       </BrowserRouter>
 
   </React.StrictMode>,
