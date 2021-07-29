@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import { Container, Form, Button } from 'bootstrap-4-react';
+import { useHistory } from 'react-router';
 
 const AddRefactoringForm = () => {
+
+    const history = useHistory();
+
     const [datos, setDatos] = useState({
         refName: '',
         elements: [],
@@ -23,19 +27,22 @@ const AddRefactoringForm = () => {
     const handleSubmit = async (event) => {
         event.preventDefault()
         console.log(datos)
+
         let elementsArray= elementsXpathToArray(datos.elements);
         console.log(elementsArray);
         setDatos({
             ...datos,
             'elements':elementsArray
         })
-        const response = await fetch('/refactorings/:' + localStorage.getItem('usertoken'),
+        console.log(typeof(datos.params))
+        let paramsJSON = JSON.parse(datos.params);
+        const response = await fetch('/refactorings/' + localStorage.getItem('usertoken'),
             {
                 method: 'POST',
                 body: JSON.stringify({
                     refName: datos.refName,
                     elements:elementsArray,
-                    params:datos.params
+                    params:paramsJSON
                 }),
                 headers: {
                     "Content-Type": "application/json",
@@ -48,7 +55,7 @@ const AddRefactoringForm = () => {
             throw Error()
         }
         else{
-            console.log("exito");
+            history.replace('./refactorings');
         }
        // console.log(body.token);
 
