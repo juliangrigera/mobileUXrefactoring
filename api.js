@@ -3,6 +3,7 @@ const { convertFunctionToString } = require('./utils/functionsToString')
 const { connect, disconnect } = require('./server/mongo')
 var cors = require('cors')
 const User = require('./server/User')
+const Refactoring = require('./server/Refactoring')
 const { FUNCTIONS_REFACTORING, INITIAL_FUNCTIONS } = require('./utils/refactoringsFunctions')
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
@@ -86,30 +87,37 @@ app.get('/refactorings/:userToken', authenticateToken, cors(), async (req, res) 
 //Creates a new refactoring, taking a user token by params and the refactoring in the request
 app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res) => {
   const data = req.body;
-  console.log(data);/*
-  let newRefactoring = new Refactoring({ //falta crear la clase
+  
+  let newRefactoring = new Refactoring({
     refName: data.refName,
     elements: data.elements,
     params: data.params
-  })*/
+  })
+
   connect()
   await User.findOneAndUpdate(
     { userToken: req.params.userToken },
-    { $push: { refactorings: data } }, // por eso le mando directamente data
+    { $push: { refactorings: newRefactoring.datos } },
     (err, suc) => {
       if (err) {
         console.log(err)
         disconnect()
-        res.status(300).end()
+        res.json({
+          mensaje: err,
+          success: false
+        }).status(300).end()
       } else {
         disconnect()
-        res.send(suc).status(200).end()
+        res.json({
+          mensaje: suc,
+          success: true
+        }).status(200).end()
       }
     }
   )
 })
 
-app.post('/updateRefactoring', authenticateToken, cors(), async (req,res) => {
+app.post('/updateRefactoring', authenticateToken, cors(), async (req, res) => {
   console.log(req.body);
 })
 
@@ -123,7 +131,7 @@ app.get('/users/:userToken', authenticateToken, cors(), async (req, res) => {
 
 
 /*---Utility---*/
-async function getRefactorings( userToken ) {
+async function getRefactorings(userToken) {
   connect();
   const refactorings = await User.aggregate([
     { $match: { 'userToken': userToken } },
@@ -139,7 +147,7 @@ async function getRefactorings( userToken ) {
 
 async function getUserByToken(token) {
   connect();
-  const user = await User.find({ 'userToken' : token }).catch(() => { user = false })
+  const user = await User.find({ 'userToken': token }).catch(() => { user = false })
   disconnect();
   return user;
 }
