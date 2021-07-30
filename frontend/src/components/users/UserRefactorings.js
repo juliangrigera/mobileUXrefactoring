@@ -3,6 +3,7 @@ import { Container, Row, Col, Button } from 'bootstrap-4-react';
 import { BsTrash, BsPencil } from "react-icons/bs";
 import Loader from "react-loader-spinner";
 import ModalUpdateRefactoring from "../modals/ModalUpdateRefactoring";
+import ModalConfirmDelete from "../modals/ModalConfirmDelete";
 
 
 function UserRefactoring(props) {
@@ -48,7 +49,7 @@ function UserRefactoring(props) {
                 <Row bg="dark" text="white" p='2'>
                     <Col sm="10" className="text-center"><span className="font-weight-bold ">{refactoring.refName}</span></Col>
                     <Col sm="1" className="text-right"> <Button primary data-toggle="modal" data-target="#updateForm" onClick={() => setRefactoring(refactoring)}><BsPencil /></Button></Col>
-                    <Col sm="1" className="text-center"><BsTrash /></Col>
+                    <Col sm="1" className="text-center"><Button primary data-toggle="modal" data-target="#deleteConfirm" ><BsTrash /></Button></Col>
                 </Row>
                 <Row p='2'>
                     <Col sm="3"><span className="font-weight-bold ">¿Que hace?</span></Col>
@@ -78,6 +79,7 @@ function UserRefactoring(props) {
             />
     }
     <ModalUpdateRefactoring refactoring={refactoring} />
+    <ModalConfirmDelete />
     </div>)
 }
 
