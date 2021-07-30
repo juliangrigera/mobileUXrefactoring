@@ -117,8 +117,31 @@ app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res)
   )
 })
 
-app.post('/updateRefactoring', authenticateToken, cors(), async (req, res) => {
+app.post('/refactorings/update/:userToken', authenticateToken, cors(), async (req, res) => {
   console.log(req.body);
+})
+
+app.post('/refactorings/delete/:userToken', authenticateToken, cors(), async (req, res) => {
+
+  connect()
+  const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
+  let itemRemove = document[0].refactorings.find(refactoring => refactoring._id == req.body.id);
+  if (itemRemove) {
+    document[0].refactorings.pull(itemRemove);
+    savedDocument = await document[0].save();
+    disconnect()
+    res.json({
+      mensaje: "Refactoring eliminado",
+      success: true
+    }).status(200).end()
+  } else {
+    disconnect()
+    res.json({
+      mensaje: "Error, no se pudo eliminar el refactoring",
+      success: false
+    }).status(300).end()
+  }
+
 })
 
 //Gets the user data for a given token
