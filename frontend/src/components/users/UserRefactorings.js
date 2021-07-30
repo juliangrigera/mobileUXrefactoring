@@ -57,7 +57,7 @@ function UserRefactoring(props) {
                 </Row>
                 <Row p='2' bg="light">
                     <Col sm="3"><span className="font-weight-bold ">¿Dónde se aplica?</span></Col>
-                    <Col>{refactoring.elements[0]}</Col>
+                    <Col>{refactoring.elements.map((element) => element+"; ")}</Col>
                 </Row>
                 <Row p='2'>
                     <Col sm="3"><span className="font-weight-bold ">Parametros</span></Col>
@@ -78,8 +78,8 @@ function UserRefactoring(props) {
                 width={100}
             />
     }
-    <ModalUpdateRefactoring refactoring={refactoring} />
-    <ModalConfirmDelete refactoring={refactoring} />
+        <ModalUpdateRefactoring refactoring={refactoring} />
+        <ModalConfirmDelete refactoring={refactoring} />
     </div>)
 }
 
