@@ -49,7 +49,7 @@ function UserRefactoring(props) {
                 <Row bg="dark" text="white" p='2'>
                     <Col sm="10" className="text-center"><span className="font-weight-bold ">{refactoring.refName}</span></Col>
                     <Col sm="1" className="text-right"> <Button primary data-toggle="modal" data-target="#updateForm" onClick={() => setRefactoring(refactoring)}><BsPencil /></Button></Col>
-                    <Col sm="1" className="text-center"><Button primary data-toggle="modal" data-target="#deleteConfirm" ><BsTrash /></Button></Col>
+                    <Col sm="1" className="text-center"><Button primary data-toggle="modal" data-target="#deleteConfirm" onClick={() => setRefactoring(refactoring)}><BsTrash /></Button></Col>
                 </Row>
                 <Row p='2'>
                     <Col sm="3"><span className="font-weight-bold ">¿Que hace?</span></Col>
@@ -79,7 +79,7 @@ function UserRefactoring(props) {
             />
     }
     <ModalUpdateRefactoring refactoring={refactoring} />
-    <ModalConfirmDelete />
+    <ModalConfirmDelete refactoring={refactoring} />
     </div>)
 }
 
