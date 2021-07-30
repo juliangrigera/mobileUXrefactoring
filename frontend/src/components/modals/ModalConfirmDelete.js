@@ -2,6 +2,26 @@ import React from 'react';
 import { Modal, Button, Alert } from 'bootstrap-4-react';
 
 const ModalConfirmDelete = (props) => {
+    
+    const deleteRefactoring = async () => {
+        const response = await fetch('/refactorings/delete/' + localStorage.getItem('usertoken'), {
+            method: 'POST',
+                body: JSON.stringify({
+                    id: props.refactoring._id
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": localStorage.getItem('token')
+                }
+        });
+        const body = await response.json();
+        console.log(body);
+        if (response.status !== 200) {
+            throw Error(body.message)
+        }
+        return body;
+    };
+    
     return (
         <Modal id="deleteConfirm" fade>
             <Modal.Dialog centered sm >
@@ -11,7 +31,7 @@ const ModalConfirmDelete = (props) => {
                     </Modal.Body>
                     <Modal.Footer>
                 <Button secondary data-dismiss="modal">Cancelar</Button>
-                <Button primary onClick={() => delete()}>Confirmar</Button>
+                <Button primary onClick={() => deleteRefactoring()}>Confirmar</Button>
               </Modal.Footer>
                 </Modal.Content>
             </Modal.Dialog>
