@@ -26,11 +26,11 @@ function generateAccessToken(username) {
 
 function authenticateToken(req, res, next) {
   const token = req.headers['authorization']
-  console.log(token);
+
   if (token == null) return res.sendStatus(401)
 
   jwt.verify(token, process.env.TOKEN_SECRET.toString(), (err, user) => {
-    console.log(err)
+    //console.log(err)
     if (err) return res.sendStatus(403)
     req.user = user
     next()
@@ -121,6 +121,7 @@ app.post('/refactorings/update/:userToken', authenticateToken, cors(), async (re
   console.log(req.body);
 })
 
+//Delete one refactoring
 app.post('/refactorings/delete/:userToken', authenticateToken, cors(), async (req, res) => {
 
   connect()
@@ -141,6 +142,41 @@ app.post('/refactorings/delete/:userToken', authenticateToken, cors(), async (re
       success: false
     }).status(300).end()
   }
+
+})
+
+function generateToken(length){
+  let rand=()=>Math.random(0).toString(36).substr(2);
+  return (rand()+rand()+rand()+rand()).substr(0,length)
+}
+
+//Generated a new token
+app.post('/user/generateToken/:userToken', authenticateToken, cors(), async(req, res) => {
+
+  let newToken = generateToken(32);
+  console.log(newToken);
+  connect()
+  await User.findOneAndUpdate(
+    { userToken: req.params.userToken },
+    { $set: { userToken: newToken } },
+    (err, suc) => {
+      if (err) {
+        console.log(err)
+        disconnect()
+        res.json({
+          mensaje: err,
+          success: false
+        }).status(300).end()
+      } else {
+        disconnect()
+        res.json({
+          mensaje: suc,
+          success: true,
+          token: newToken
+        }).status(200).end()
+      }
+    }
+  )
 
 })
 
