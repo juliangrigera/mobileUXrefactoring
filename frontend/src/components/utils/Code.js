@@ -10,7 +10,7 @@ function Code() {
 
     return(
         <pre><code className="language-javascript">{
-            'let userToken = "juan2021";'
+            'let userToken = "'+localStorage.getItem('usertoken') +'";'
             +'function load() {'
                 +'var xhr = new XMLHttpRequest();'
                 +'xhr.open("GET", "http://localhost:3000/refactor/" + userToken, false);'
