@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Form, Button } from 'bootstrap-4-react';
 import { useHistory } from 'react-router';
 
@@ -6,15 +6,17 @@ const AddRefactoringForm = () => {
 
     const history = useHistory();
 
+    const [refactorings, setRefactorings] = useState([]);
+
     const [datos, setDatos] = useState({
         refName: '',
         elements: [],
         params: {}
     })
-
-    const elementsXpathToArray= (cadena) => {
+    //Convierte los elementos de un string en un array usando como separador el ";"
+    const elementsXpathToArray = (cadena) => {
         let subCadena = cadena.replace(/\s+/g, '');
-        subCadena = subCadena.substring(0,subCadena.length-1); // saco el ultimo ; para que no quede una carga vacia
+        subCadena = subCadena.substring(0, subCadena.length - 1); // saco el ultimo ; para que no quede una carga vacia
         return subCadena.split(";");
     }
 
@@ -28,21 +30,21 @@ const AddRefactoringForm = () => {
         event.preventDefault()
         console.log(datos)
 
-        let elementsArray= elementsXpathToArray(datos.elements);
+        let elementsArray = elementsXpathToArray(datos.elements);
         console.log(elementsArray);
         setDatos({
             ...datos,
-            'elements':elementsArray
+            'elements': elementsArray
         })
-        console.log(typeof(datos.params))
+        console.log(typeof (datos.params))
         let paramsJSON = JSON.parse(datos.params);
         const response = await fetch('/refactorings/' + localStorage.getItem('usertoken'),
             {
                 method: 'POST',
                 body: JSON.stringify({
                     refName: datos.refName,
-                    elements:elementsArray,
-                    params:paramsJSON
+                    elements: elementsArray,
+                    params: paramsJSON
                 }),
                 headers: {
                     "Content-Type": "application/json",
@@ -54,11 +56,31 @@ const AddRefactoringForm = () => {
         if (response.status !== 200) {
             throw Error()
         }
-        else{
+        else {
             history.replace('./refactorings');
         }
-       // console.log(body.token);
+        // console.log(body.token);
+    }
 
+    useEffect(() => {
+        getData().then(data => setRefactorings(data.refactorings)).catch(e => console.log(e))
+    }, [])
+    const getData = async () => {
+        //console.log(localStorage.getItem('token'));
+        const response = await fetch('/refactorings/all');
+        const body = await response.json();
+        console.log(body);
+        if (response.status !== 200) {
+            throw Error(body.message)
+        }
+        return body;
+    };
+
+    const refactoringsNames = (refactoringsArray) => {
+        const result = refactoringsArray.map((name) =>
+            <option>{name}</option>
+        )
+        return result;
     }
 
     return (
@@ -67,8 +89,10 @@ const AddRefactoringForm = () => {
                 <Form.Group>
                     <label htmlFor="refName">Refactoring:</label>
                     <Form.Select required name="refName" id="refName" onChange={handleInputChange}  >
-                        <option>enlargeHitbox</option>
-                        <option>reduceText</option>
+                        {refactorings.length > 0 ?
+                            refactoringsNames(refactorings)
+                            : <option>loading...</option>
+                        }
                     </Form.Select>
                 </Form.Group>
                 <Form.Group>
