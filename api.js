@@ -61,6 +61,15 @@ app.post('/authenticate', cors(), async (req, res) => {
   }
 })
 
+app.get('/refactorings/all', cors(), (req, res) => {
+  console.log(Object.keys(FUNCTIONS_REFACTORING));
+  refactoringsName= Object.keys(FUNCTIONS_REFACTORING);
+  res.json({
+    success: true,
+    refactorings: refactoringsName
+  })
+})
+
 //Gets eval code to apply refactorings for a user token
 app.get('/refactor/:userToken', cors(), async (req, res) => {
   //Request contains a user token
@@ -87,7 +96,7 @@ app.get('/refactorings/:userToken', authenticateToken, cors(), async (req, res) 
 //Creates a new refactoring, taking a user token by params and the refactoring in the request
 app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res) => {
   const data = req.body;
-  
+
   let newRefactoring = new Refactoring({
     refName: data.refName,
     elements: data.elements,
@@ -145,13 +154,13 @@ app.post('/refactorings/delete/:userToken', authenticateToken, cors(), async (re
 
 })
 
-function generateToken(length){
-  let rand=()=>Math.random(0).toString(36).substr(2);
-  return (rand()+rand()+rand()+rand()).substr(0,length)
+function generateToken(length) {
+  let rand = () => Math.random(0).toString(36).substr(2);
+  return (rand() + rand() + rand() + rand()).substr(0, length)
 }
 
 //Generated a new token
-app.post('/user/generateToken/:userToken', authenticateToken, cors(), async(req, res) => {
+app.post('/user/generateToken/:userToken', authenticateToken, cors(), async (req, res) => {
 
   let newToken = generateToken(32);
   console.log(newToken);
