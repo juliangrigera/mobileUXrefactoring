@@ -7,7 +7,7 @@ con lo que recibio.-->
     let userToken = "juan2021"
     function load() {
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "http://localhost:3000/refactor/" + userToken, false);
+            xhr.open("GET", "http://localhost:3000/refactorings/refactor/" + userToken, false);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.send();
             if (xhr.status == 200){

@@ -9,7 +9,7 @@ const versionSchema = new Schema({
 
 const refactoringSchema = new Schema({
   refName: String,
-  elements: [String],
+  elements: [ String ],
   params: Object
 })
 
@@ -18,9 +18,11 @@ const userSchema = new Schema({
   password: String,
   userToken: String,
   url: String,
-  refactorings: [refactoringSchema]
+  refactorings: [refactoringSchema],
+  version: [versionSchema]
 })
 
 const User = model('User', userSchema)
+const Version = model('Version', versionSchema)
 
-module.exports = User
+module.exports = {User, Version}
