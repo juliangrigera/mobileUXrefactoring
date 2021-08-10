@@ -11,9 +11,10 @@ function Code() {
     return(
         <pre><code className="language-javascript">{
             'let userToken = "'+localStorage.getItem('usertoken') +'";'
+            +'let versionTag = "'+localStorage.getItem('versionTag') +'";'
             +'function load() {'
                 +'var xhr = new XMLHttpRequest();'
-                +'xhr.open("GET", "http://localhost:3000/refactor/" + userToken, false);'
+                +'xhr.open("GET", "http://localhost:3000/refactor/" + userToken + "/" + versionTag, false);'
                 +'xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");'
                 +'xhr.send();'
                 +'if (xhr.status == 200){'
