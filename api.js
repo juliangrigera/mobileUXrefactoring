@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
 const { convertFunctionToString } = require('./utils/functionsToString')
 const { FUNCTIONS_REFACTORING, INITIAL_FUNCTIONS } = require('./utils/refactoringsFunctions')
-const {User} = require('./server/User')
+const {User, Version} = require('./server/User')
 const Refactoring = require('./server/Refactoring')
 
 /*------app.use-------*/
@@ -81,28 +81,110 @@ app.get('/users/:userToken', authenticateToken, cors(), async (req, res) => {
   res.json(user[0]).status(200).end();
 })
 
-//Get versions for a user token
-app.get('', cors(), async (req, res) => {
 
+
+
+/*---Version Routes---*/
+//Get versions for a user token
+app.get('/versions/:userToken', cors(), async (req, res) => {
+ connect();
+ const versions = await User.aggregate([
+  { $match: { 'userToken': userToken } },
+  { $unwind: "$versions" },
+  { $replaceRoot: { newRoot: "$versions" } }
+]).catch(e => {
+  disconnect();
+  res.json({
+    mensaje: err,
+    success: false
+  }).status(300).end();
+});
+  disconnect();
+  res.json({
+    versions,
+    success: true
+  }).status(200).end()
 })
 
 //Create new version for a user token
-app.post('', cors(), async (req, res) => {
+app.post('/versions/:userToken', cors(), async (req, res) => {
   
+  const data = req.body;
+  connect();
+
+  let newVersion = new Version({
+    name: data.name,
+    description: data.description,
+    qrUrl: data.qrUrl,
+    tag: data.tag
+  })
+  
+  const foundVersion = await User.aggregate([
+    { $match: { 'userToken': userToken } },
+    { $unwind: "$versions" },
+    { $replaceRoot: { newRoot: "$versions" } },
+    { $match: { 'tag': data.tag }}
+  ]).catch(e => console.error(e))
+
+  if (Object.entries(foundVersion).length === 0){
+
+    await User.findOneAndUpdate(
+      { userToken: req.params.userToken },
+      { $push: { versions: newVersion } },
+      (err, suc) => {
+        if (err) {
+          console.log(err)
+          disconnect()
+          res.json({
+            mensaje: err,
+            success: false
+          }).status(300).end()
+        } else {
+          disconnect()
+          res.json({
+            mensaje: suc,
+            success: true
+          }).status(200).end()
+        }
+      }
+    )
+
+  } else {
+
+    disconnect();
+    response.send({
+      mensaje: 'El tag debe ser único',
+      success: false
+    }).status(300).end();
+
+  }
+
 })
 
-//Delete version for a user token
-app.get('', cors(), async (req, res) => {
+//Update version for a user token and version tag
+app.put('/versions/:userToken/:versionTag', cors(), async (req, res) => {
   
+  //Deberia chequear por no pisar tags existentes si ya existe otro
+
 })
+
+
+//Delete version for a user token and version tag
+app.delete('/versions/:userToken/:versionTag', cors(), async (req, res) => {
+  
+  //Deberia chequear por referencia desde refactorings o borrar todo?
+
+})
+
+
 
 
 /*--- Refactorings routes ---*/
 //Gets eval code to apply refactorings for a user token and version tag
-app.get('/refactor/:userToken/:version', cors(), async (req, res) => {
+app.get('/refactor/:userToken/:versionTag', cors(), async (req, res) => {
   //Request contains a user token
   const data = req.body;
-  const refactorings = await getRefactorings(req.params.userToken);
+  const refactorings = await getRefactorings(req.params.userToken, req.params.versionTag);
 
   //Forms string with code for eval function
   var stream = '';
@@ -132,8 +214,9 @@ app.get('/refactorings/:userToken', authenticateToken, cors(), async (req, res) 
 })
 
 //Gets all the refactorings for a user token and a version tag
-app.get('/refactorings/:userToken/:version', authenticateToken, cors(), async (req, res) => {
-
+app.get('/refactorings/:userToken/:versionTag', authenticateToken, cors(), async (req, res) => {
+  const refactorings = await getRefactorings(req.params.userToken, req.params.userToken.versionTag);
+  res.json(refactorings).status(200).end();
 })
 
 //Creates a new refactoring, taking a user token by params and the refactoring in the request
@@ -232,15 +315,30 @@ function authenticateToken(req, res, next) {
   })
 }
 
-async function getRefactorings(userToken) {
+async function getRefactorings(userToken, versionTag) {
   connect();
-  const refactorings = await User.aggregate([
-    { $match: { 'userToken': userToken } },
-    { $unwind: "$refactorings" },
-    { $replaceRoot: { newRoot: "$refactorings" } }
-  ]).catch(e => {
-    return console.error(e);
-  });
+  var refactorings;
+
+  if(!versionTag){
+    refactorings = await User.aggregate([
+      { $match: { 'userToken': userToken } },
+      { $unwind: "$refactorings" },
+      { $replaceRoot: { newRoot: "$refactorings" } }
+    ]).catch(e => {
+      return console.error(e);
+    });
+  } else {
+    refactorings = await User.aggregate([
+      { $match: { 'userToken': userToken } },
+      { $unwind: "$refactorings" },
+      { $replaceRoot: { newRoot: "$refactorings" } },
+      //no se si la siguiente linea funciona bien
+      { $filter: { input: "$versions", as: v, cond: v === versionTag } }
+    ]).catch(e => {
+      return console.error(e);
+    });
+  }
+  
   disconnect();
 
   return refactorings;
