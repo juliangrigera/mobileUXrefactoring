@@ -81,9 +81,25 @@ app.get('/users/:userToken', authenticateToken, cors(), async (req, res) => {
   res.json(user[0]).status(200).end();
 })
 
+//Get versions for a user token
+app.get('', cors(), async (req, res) => {
+
+})
+
+//Create new version for a user token
+app.post('', cors(), async (req, res) => {
+  
+})
+
+//Delete version for a user token
+app.get('', cors(), async (req, res) => {
+  
+})
+
+
 /*--- Refactorings routes ---*/
-//Gets eval code to apply refactorings for a user token
-app.get('/refactor/:userToken', cors(), async (req, res) => {
+//Gets eval code to apply refactorings for a user token and version tag
+app.get('/refactor/:userToken/:version', cors(), async (req, res) => {
   //Request contains a user token
   const data = req.body;
   const refactorings = await getRefactorings(req.params.userToken);
@@ -115,6 +131,11 @@ app.get('/refactorings/:userToken', authenticateToken, cors(), async (req, res) 
   res.json(refactorings).status(200).end();
 })
 
+//Gets all the refactorings for a user token and a version tag
+app.get('/refactorings/:userToken/:version', authenticateToken, cors(), async (req, res) => {
+
+})
+
 //Creates a new refactoring, taking a user token by params and the refactoring in the request
 app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res) => {
   
@@ -123,7 +144,8 @@ app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res)
   let newRefactoring = new Refactoring({
     refName: data.refName,
     elements: data.elements,
-    params: data.paramsS
+    params: data.params,
+    versions: data.versions
   })
 
   connect()
@@ -151,14 +173,14 @@ app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res)
 })
 
 //Update
-app.post('/refactorings/update/:userToken', authenticateToken, cors(), async (req, res) => {
+app.put('/refactorings/update/:userToken', authenticateToken, cors(), async (req, res) => {
 
   console.log(req.body);
 
 })
 
 //Delete one refactoring
-app.post('/refactorings/delete/:userToken', authenticateToken, cors(), async (req, res) => {
+app.put('/refactorings/delete/:userToken', authenticateToken, cors(), async (req, res) => {
 
   connect()
   const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
@@ -180,6 +202,10 @@ app.post('/refactorings/delete/:userToken', authenticateToken, cors(), async (re
   }
   
 })
+
+
+
+
 
 
 
