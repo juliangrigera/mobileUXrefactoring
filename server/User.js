@@ -10,7 +10,8 @@ const versionSchema = new Schema({
 const refactoringSchema = new Schema({
   refName: String,
   elements: [ String ],
-  params: Object
+  params: Object,
+  versions: [ String ]
 })
 
 const userSchema = new Schema({
@@ -19,7 +20,7 @@ const userSchema = new Schema({
   userToken: String,
   url: String,
   refactorings: [refactoringSchema],
-  version: [versionSchema]
+  versions: [versionSchema]
 })
 
 const User = model('User', userSchema)
