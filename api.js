@@ -86,10 +86,10 @@ app.get('/users/:userToken', authenticateToken, cors(), async (req, res) => {
 
 /*---Version Routes---*/
 //Get versions for a user token
-app.get('/versions/:userToken', cors(), async (req, res) => {
+app.get('/versions/:userToken', authenticateToken ,cors(), async (req, res) => {
  connect();
  const versions = await User.aggregate([
-  { $match: { 'userToken': userToken } },
+  { $match: { 'userToken': req.params.userToken } },
   { $unwind: "$versions" },
   { $replaceRoot: { newRoot: "$versions" } }
 ]).catch(e => {
@@ -118,9 +118,9 @@ app.post('/versions/:userToken', cors(), async (req, res) => {
     qrUrl: data.qrUrl,
     tag: data.tag
   })
-  
+  console.log(newVersion);
   const foundVersion = await User.aggregate([
-    { $match: { 'userToken': userToken } },
+    { $match: { 'userToken': req.params.userToken } },
     { $unwind: "$versions" },
     { $replaceRoot: { newRoot: "$versions" } },
     { $match: { 'tag': data.tag }}
@@ -152,7 +152,7 @@ app.post('/versions/:userToken', cors(), async (req, res) => {
   } else {
 
     disconnect();
-    response.send({
+    res.send({
       mensaje: 'El tag debe ser único',
       success: false
     }).status(300).end();
@@ -181,7 +181,7 @@ app.delete('/versions/:userToken/:versionTag', cors(), async (req, res) => {
 
 /*--- Refactorings routes ---*/
 //Gets eval code to apply refactorings for a user token and version tag
-app.get('/refactor/:userToken/:versionTag', cors(), async (req, res) => {
+app.get('/refactorings/:userToken/:versionTag', cors(), async (req, res) => {
   //Request contains a user token
   const data = req.body;
   const refactorings = await getRefactorings(req.params.userToken, req.params.versionTag);
@@ -192,7 +192,7 @@ app.get('/refactor/:userToken/:versionTag', cors(), async (req, res) => {
   for (r of refactorings) {
     for (element of r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refName], element, r.params);
   }
-  console.log(stream);
+  //console.log(stream);
 
   res.send(stream).status(200).end();
 })
