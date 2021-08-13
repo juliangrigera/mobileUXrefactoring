@@ -7,6 +7,7 @@ import ModalConfirmDelete from "../modals/ModalConfirmDelete";
 
 
 function UserRefactoring(props) {
+    console.log(props.tag);
     const [refactorings, setRefactorings] = useState([{
         refName: "",
         elements: [String],
@@ -24,7 +25,7 @@ function UserRefactoring(props) {
     }, [])
     const getData = async () => {
         //console.log(localStorage.getItem('token'));
-        const response = await fetch('/refactorings/' + localStorage.getItem('usertoken'), {
+        const response = await fetch('/refactorings/' + localStorage.getItem('usertoken') + "/" + props.tag, {
             headers: { "authorization": localStorage.getItem('token') }
         });
         const body = await response.json();
@@ -57,7 +58,7 @@ function UserRefactoring(props) {
                 </Row>
                 <Row p='2' bg="light">
                     <Col sm="3"><span className="font-weight-bold ">¿Dónde se aplica?</span></Col>
-                    <Col>{refactoring.elements.map((element) => element+"; ")}</Col>
+                    <Col>{refactoring.elements.map((element) => element + "; ")}</Col>
                 </Row>
                 <Row p='2'>
                     <Col sm="3"><span className="font-weight-bold ">Parametros</span></Col>
@@ -71,12 +72,18 @@ function UserRefactoring(props) {
     return (<div>{
         refactorings[0].refName !== ""
             ? showRefactoring(refactorings)
-            : <Loader
-                type="Puff"
-                color="#00BFFF"
-                height={100}
-                width={100}
-            />
+            : <Container>
+                <Row p='2' bg="light">
+                    <Col col="12 md-4"></Col>
+                    <Col col="12 md-4"><Loader
+                        type="Puff"
+                        color="#00BFFF"
+                        height={100}
+                        width={100}
+                    /></Col>
+                    <Col col="12 md-4"></Col>
+                </Row>
+            </Container>
     }
         <ModalUpdateRefactoring refactoring={refactoring} />
         <ModalConfirmDelete refactoring={refactoring} />

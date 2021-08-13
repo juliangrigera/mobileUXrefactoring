@@ -75,7 +75,7 @@ const AddRefactoringForm = () => {
         }
         return body;
     };
-
+    //Devuelve la lista de nombres de los refactorings para las opciones del campo select
     const refactoringsNames = (refactoringsArray) => {
         const result = refactoringsArray.map((name) =>
             <option>{name}</option>
