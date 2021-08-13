@@ -215,7 +215,7 @@ app.get('/refactorings/:userToken', authenticateToken, cors(), async (req, res) 
 
 //Gets all the refactorings for a user token and a version tag
 app.get('/refactorings/:userToken/:versionTag', authenticateToken, cors(), async (req, res) => {
-  const refactorings = await getRefactorings(req.params.userToken, req.params.userToken.versionTag);
+  const refactorings = await getRefactorings(req.params.userToken, req.params.versionTag);
   res.json(refactorings).status(200).end();
 })
 
@@ -318,8 +318,10 @@ function authenticateToken(req, res, next) {
 async function getRefactorings(userToken, versionTag) {
   connect();
   var refactorings;
+  console.log(versionTag)
 
   if(!versionTag){
+    console.log("ping")
     refactorings = await User.aggregate([
       { $match: { 'userToken': userToken } },
       { $unwind: "$refactorings" },
@@ -328,12 +330,14 @@ async function getRefactorings(userToken, versionTag) {
       return console.error(e);
     });
   } else {
+    console.log("pong")
     refactorings = await User.aggregate([
       { $match: { 'userToken': userToken } },
       { $unwind: "$refactorings" },
       { $replaceRoot: { newRoot: "$refactorings" } },
       //no se si la siguiente linea funciona bien
-      { $filter: { input: "$versions", as: v, cond: v === versionTag } }
+      { $unwind: "$versions" },
+      { $match: { 'versions': versionTag } }
     ]).catch(e => {
       return console.error(e);
     });

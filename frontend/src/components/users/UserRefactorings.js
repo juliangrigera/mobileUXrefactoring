@@ -70,7 +70,7 @@ function UserRefactoring(props) {
     }
 
     return (<div>{
-        refactorings[0].refName !== ""
+        refactorings.length > 0
             ? showRefactoring(refactorings)
             : <Container>
                 <Row p='2' bg="light">

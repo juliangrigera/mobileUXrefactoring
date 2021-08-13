@@ -4,7 +4,8 @@ import QRCode from 'react-qr-code';
 
 function QR() {
 
-	const qrUrl = localStorage.getItem('qrUrl');
+	//const qrUrl = localStorage.getItem('qrUrl');
+	const qrUrl = "placeholder value"
 
 	return(
 		<QRCode id="QRCode" value={qrUrl}></QRCode>
