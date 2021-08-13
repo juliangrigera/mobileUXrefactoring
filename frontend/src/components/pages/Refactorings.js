@@ -18,6 +18,8 @@ function RefactoringPage(props) {
                 <GenerateToken />
                 <h3> Versiones con los refactorings aplicados a cada una de ellas</h3>
                 <ShowVersions />
+                <h3> Codigo QR para abrir la version con los refactorings aplicados </h3>
+                <QR />
             </BDiv>
         </Container>
     )
