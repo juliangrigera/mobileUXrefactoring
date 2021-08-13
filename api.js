@@ -181,7 +181,7 @@ app.delete('/versions/:userToken/:versionTag', cors(), async (req, res) => {
 
 /*--- Refactorings routes ---*/
 //Gets eval code to apply refactorings for a user token and version tag
-app.get('/refactorings/:userToken/:versionTag', cors(), async (req, res) => {
+app.get('/refactor/:userToken/:versionTag', cors(), async (req, res) => {
   //Request contains a user token
   const data = req.body;
   const refactorings = await getRefactorings(req.params.userToken, req.params.versionTag);
