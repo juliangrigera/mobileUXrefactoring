@@ -321,7 +321,6 @@ async function getRefactorings(userToken, versionTag) {
   console.log(versionTag)
 
   if(!versionTag){
-    console.log("ping")
     refactorings = await User.aggregate([
       { $match: { 'userToken': userToken } },
       { $unwind: "$refactorings" },
@@ -330,7 +329,6 @@ async function getRefactorings(userToken, versionTag) {
       return console.error(e);
     });
   } else {
-    console.log("pong")
     refactorings = await User.aggregate([
       { $match: { 'userToken': userToken } },
       { $unwind: "$refactorings" },
