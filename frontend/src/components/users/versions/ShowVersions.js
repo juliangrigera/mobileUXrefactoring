@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import { Nav, Tab, Container, Row, Col } from 'bootstrap-4-react/lib/components';
 import UserRefactoring from '../UserRefactorings';
+import QRCode from 'react-qr-code';
+import updateQuery from '../../utils/updateQuery';
 
 const ShowVersions = () => {
     const [versions, setVersion] = useState([])    
@@ -38,16 +40,24 @@ const ShowVersions = () => {
             <Tab.Pane id={version.tag} aria-labelledby={version.tag + "-tab"} className={(index === 0 )? "active show" : "" }>
                 <Container>
                     <Row pt="2" pb="2">
-                        <Col col="8 md-2"><span className="font-weight-bold ">Nombre</span></Col>
-                        <Col col="8 md-6">{version.name}</Col>
-                    </Row>
-                    <Row pt="2" pb="2">
-                        <Col col="8 md-2"><span className="font-weight-bold ">Descripcion</span></Col>
-                        <Col col="8 md-6">{version.description}</Col>
-                    </Row>
-                    <Row pt="2" pb="2">
-                        <Col col="8 md-2"><span className="font-weight-bold ">QR-url</span></Col>
-                        <Col col="8 md-6">{version.qrUrl}</Col>
+                        <Col>
+                            <Row pt="2" pb="2">
+                                <Col col="8 md-2"><span className="font-weight-bold ">Nombre</span></Col>
+                                <Col col="8 md-6">{version.name}</Col>
+                            </Row>
+                            <Row pt="2" pb="2">
+                                <Col col="8 md-2"><span className="font-weight-bold ">Descripcion</span></Col>
+                                <Col col="8 md-6">{version.description}</Col>
+                            </Row>
+                            <Row pt="2" pb="2">
+                                <Col col="8 md-2"><span className="font-weight-bold ">QR-url</span></Col>
+                                <Col col="8 md-6">{version.qrUrl}</Col>
+                            </Row>
+                        </Col>
+                        <Col>
+                            <h4>Codigo QR</h4>
+                            <QRCode id="QRCode" value={updateQuery(version.qrUrl, "version", version.tag)}></QRCode>
+                        </Col>
                     </Row>
                 </Container>
                 <UserRefactoring tag={version.tag}/>

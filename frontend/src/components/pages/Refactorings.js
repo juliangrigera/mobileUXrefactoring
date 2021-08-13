@@ -2,7 +2,6 @@ import React from 'react';
 import {BDiv} from 'bootstrap-4-react';
 import Code from '../utils/Code';
 import Header from "./../layout/Header";
-import QR from '../utils/qr'
 import { Container } from 'bootstrap-4-react';
 import GenerateToken from '../forms/GenerateToken';
 import ShowVersions from '../users/versions/ShowVersions';
@@ -18,8 +17,6 @@ function RefactoringPage(props) {
                 <GenerateToken />
                 <h3> Versiones con los refactorings aplicados a cada una de ellas</h3>
                 <ShowVersions />
-                <h3> Codigo QR para abrir la version con los refactorings aplicados </h3>
-                <QR />
             </BDiv>
         </Container>
     )
