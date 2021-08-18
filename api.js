@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
 const { convertFunctionToString } = require('./utils/functionsToString')
 const { FUNCTIONS_REFACTORING, INITIAL_FUNCTIONS } = require('./utils/refactoringsFunctions')
-const {User, Version} = require('./server/User')
+const { User, Version } = require('./server/User')
 const Refactoring = require('./server/Refactoring')
 
 /*------app.use-------*/
@@ -86,19 +86,19 @@ app.get('/users/:userToken', authenticateToken, cors(), async (req, res) => {
 
 /*---Version Routes---*/
 //Get versions for a user token
-app.get('/versions/:userToken', authenticateToken ,cors(), async (req, res) => {
- connect();
- const versions = await User.aggregate([
-  { $match: { 'userToken': req.params.userToken } },
-  { $unwind: "$versions" },
-  { $replaceRoot: { newRoot: "$versions" } }
-]).catch(e => {
-  disconnect();
-  res.json({
-    mensaje: err,
-    success: false
-  }).status(300).end();
-});
+app.get('/versions/:userToken', authenticateToken, cors(), async (req, res) => {
+  connect();
+  const versions = await User.aggregate([
+    { $match: { 'userToken': req.params.userToken } },
+    { $unwind: "$versions" },
+    { $replaceRoot: { newRoot: "$versions" } }
+  ]).catch(e => {
+    disconnect();
+    res.json({
+      mensaje: err,
+      success: false
+    }).status(300).end();
+  });
   disconnect();
   res.json({
     versions,
@@ -108,7 +108,7 @@ app.get('/versions/:userToken', authenticateToken ,cors(), async (req, res) => {
 
 //Create new version for a user token
 app.post('/versions/:userToken', cors(), async (req, res) => {
-  
+
   const data = req.body;
   connect();
 
@@ -123,10 +123,10 @@ app.post('/versions/:userToken', cors(), async (req, res) => {
     { $match: { 'userToken': req.params.userToken } },
     { $unwind: "$versions" },
     { $replaceRoot: { newRoot: "$versions" } },
-    { $match: { 'tag': data.tag }}
+    { $match: { 'tag': data.tag } }
   ]).catch(e => console.error(e))
 
-  if (Object.entries(foundVersion).length === 0){
+  if (Object.entries(foundVersion).length === 0) {
 
     await User.findOneAndUpdate(
       { userToken: req.params.userToken },
@@ -163,7 +163,7 @@ app.post('/versions/:userToken', cors(), async (req, res) => {
 
 //Update version for a user token and version tag
 app.put('/versions/:userToken/:versionTag', cors(), async (req, res) => {
-  
+
   //Deberia chequear por no pisar tags existentes si ya existe otro
 
 })
@@ -171,7 +171,7 @@ app.put('/versions/:userToken/:versionTag', cors(), async (req, res) => {
 
 //Delete version for a user token and version tag
 app.delete('/versions/:userToken/:versionTag', cors(), async (req, res) => {
-  
+
   //Deberia chequear por referencia desde refactorings o borrar todo?
 
 })
@@ -200,7 +200,7 @@ app.get('/refactor/:userToken/:versionTag', cors(), async (req, res) => {
 //Fetches all refactorings' names
 app.get('/refactorings/all', cors(), (req, res) => {
   console.log(Object.keys(FUNCTIONS_REFACTORING));
-  refactoringsName= Object.keys(FUNCTIONS_REFACTORING);
+  refactoringsName = Object.keys(FUNCTIONS_REFACTORING);
   res.json({
     success: true,
     refactorings: refactoringsName
@@ -221,7 +221,7 @@ app.get('/refactorings/:userToken/:versionTag', authenticateToken, cors(), async
 
 //Creates a new refactoring, taking a user token by params and the refactoring in the request
 app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res) => {
-  
+  //console.log(req.body)
   const data = req.body;
 
   let newRefactoring = new Refactoring({
@@ -259,7 +259,20 @@ app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res)
 app.put('/refactorings/update/:userToken', authenticateToken, cors(), async (req, res) => {
 
   console.log(req.body);
+  console.log(JSON.parse(req.body.parameters))
 
+  const refactoring = req.body.refactoring;
+  refactoring.elements = req.body.xpath;
+  refactoring.params = JSON.parse(req.body.parameters);
+
+  console.log(refactoring)
+  connect()
+  await User.updateOne(
+    { 'userToken': req.body.usertoken },
+    { $set: { "$refactorings.$[elem]": refactoring } },
+    { arrayFilters: [{ "elem._id": { $eq: refactoring._id } }] }
+  ).catch(e => console.error(e))
+  disconnect()
 })
 
 //Delete one refactoring
@@ -283,7 +296,7 @@ app.put('/refactorings/delete/:userToken', authenticateToken, cors(), async (req
       success: false
     }).status(300).end()
   }
-  
+
 })
 
 
@@ -320,7 +333,7 @@ async function getRefactorings(userToken, versionTag) {
   var refactorings;
   console.log(versionTag)
 
-  if(!versionTag){
+  if (!versionTag) {
     refactorings = await User.aggregate([
       { $match: { 'userToken': userToken } },
       { $unwind: "$refactorings" },
@@ -340,7 +353,7 @@ async function getRefactorings(userToken, versionTag) {
       return console.error(e);
     });
   }
-  
+
   disconnect();
 
   return refactorings;
