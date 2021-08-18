@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Container, Form, Button } from 'bootstrap-4-react';
 import { useHistory } from 'react-router';
+import CheckBoxVersions from './ChechBoxVersions';
+import Refactoring from '../../context/RefactoringContext';
 
 const AddRefactoringForm = () => {
 
     const history = useHistory();
+
+    const context = useContext(Refactoring)
 
     const [refactorings, setRefactorings] = useState([]);
 
     const [datos, setDatos] = useState({
         refName: '',
         elements: [],
-        params: {}
+        params: {},
+        versions: []
     })
     //Convierte los elementos de un string en un array usando como separador el ";"
     const elementsXpathToArray = (cadena) => {
@@ -29,7 +34,7 @@ const AddRefactoringForm = () => {
     const handleSubmit = async (event) => {
         event.preventDefault()
         console.log(datos)
-
+        console.log(context)
         let elementsArray = elementsXpathToArray(datos.elements);
         console.log(elementsArray);
         setDatos({
@@ -44,7 +49,8 @@ const AddRefactoringForm = () => {
                 body: JSON.stringify({
                     refName: datos.refName,
                     elements: elementsArray,
-                    params: paramsJSON
+                    params: paramsJSON,
+                    versions: context.versions
                 }),
                 headers: {
                     "Content-Type": "application/json",
@@ -82,10 +88,12 @@ const AddRefactoringForm = () => {
         )
         return result;
     }
+    
 
     return (
         <Container>
             <Form onSubmit={handleSubmit}>
+                <CheckBoxVersions />
                 <Form.Group>
                     <label htmlFor="refName">Refactoring:</label>
                     <Form.Select required name="refName" id="refName" onChange={handleInputChange}  >
