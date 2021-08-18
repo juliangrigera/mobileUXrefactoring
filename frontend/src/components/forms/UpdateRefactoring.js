@@ -20,9 +20,9 @@ const UpdateForm = (props) => {
         event.preventDefault()
         console.log(datos.xpath)
         console.log(datos.parameters)
-        const response = await fetch('/updateRefactoring',
+        const response = await fetch('/refactorings/update/'+localStorage.getItem('token'),
             {
-                method: 'POST',
+                method: 'PUT',
                 body: JSON.stringify({
                     xpath: elementsXpathToArray(datos.xpath),
                     parameters: datos.parameters,
