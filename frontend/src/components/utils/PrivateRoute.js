@@ -8,7 +8,7 @@ const PrivateRoute = ({ component: Component, auth, ...rest }) => (
     <Route
         {...rest}
         render={props =>
-            true === true ? (
+             localStorage.getItem('token') ? (
                 <Component {...props} />
             ) :
                 <Redirect to="/login" />

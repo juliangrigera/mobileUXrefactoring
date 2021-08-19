@@ -21,9 +21,9 @@ ReactDOM.render(
      <BrowserRouter>
         <Switch>
           <Route exact path="/" component={Login} />
-          <Route path="/user" component={Layout} />
           <Route path="/login" component={Login} />
           </Switch>
+          <PrivateRoute path="/user" component={Layout} />
           <PrivateRoute path="/refactorings" component={RefactoringPage} />
           <PrivateRoute path="/addRefactoring" component={AddRefactoringPage} />
       </BrowserRouter>

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { Nav, Tab, Container, Row, Col } from 'bootstrap-4-react/lib/components';
+import { Nav, Tab, Container, Row, Col , Card} from 'bootstrap-4-react/lib/components';
 import UserRefactoring from '../UserRefactorings';
 import QRCode from 'react-qr-code';
 import updateQuery from '../../utils/updateQuery';
@@ -16,7 +16,11 @@ const ShowVersions = () => {
         });
         const body = await response.json();
         console.log(body);
-        if (response.status !== 200) {
+        if (!body.success && body.success!=='undefined') {
+            if(body.status===403){
+                localStorage.removeItem('token');
+                localStorage.removeItem('usertoken');
+            }
             throw Error(body.message)
         }
         return body.versions;
@@ -42,15 +46,15 @@ const ShowVersions = () => {
                     <Row pt="2" pb="2">
                         <Col>
                             <Row pt="2" pb="2">
-                                <Col col="8 md-2"><span className="font-weight-bold ">Nombre</span></Col>
+                                <Col col="8 md-4"><span className="font-weight-bold ">Nombre</span></Col>
                                 <Col col="8 md-6">{version.name}</Col>
                             </Row>
                             <Row pt="2" pb="2">
-                                <Col col="8 md-2"><span className="font-weight-bold ">Descripcion</span></Col>
+                                <Col col="8 md-4"><span className="font-weight-bold ">Descripcion</span></Col>
                                 <Col col="8 md-6">{version.description}</Col>
                             </Row>
                             <Row pt="2" pb="2">
-                                <Col col="8 md-2"><span className="font-weight-bold ">QR-url</span></Col>
+                                <Col col="8 md-4"><span className="font-weight-bold ">QR-url</span></Col>
                                 <Col col="8 md-6">{version.qrUrl}</Col>
                             </Row>
                         </Col>
@@ -69,7 +73,9 @@ const ShowVersions = () => {
     }
     
 
-    return(<React.Fragment>
+    return(<Card mt="3">
+    <Card.Body>
+        <Card.Title>Versiones con los refactorings aplicados a cada una de ellas</Card.Title>
              {(versions.length > 0) ?
                             navbarVersions(versions)
                             : <option>loading...</option>
@@ -78,7 +84,8 @@ const ShowVersions = () => {
                             tabpaneVersions(versions)
                             : <option>loading...</option>
                         }
-      </React.Fragment>)
+      </Card.Body>
+      </Card>)
 }
 
 export default ShowVersions;

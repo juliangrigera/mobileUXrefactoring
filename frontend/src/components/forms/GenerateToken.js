@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button, InputGroup } from 'bootstrap-4-react';
+import { Card } from 'bootstrap-4-react/lib/components';
 
 const GenerateToken = () => {
     const [token, setToken] = useState(localStorage.getItem('usertoken'))
@@ -12,8 +13,11 @@ const GenerateToken = () => {
         const body = await response.json();
         console.log(body);
         //obtener la respuesta
-        if (response.status !== 200) {
-            //Si, informar del error
+        if (!body.success && body.success !== 'undefined') {
+            if (body.status === 403) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('usertoken');
+            }
             throw Error(body.message)
         } else {
             if (body.success) {
@@ -39,13 +43,18 @@ const GenerateToken = () => {
     }
 
     return (
-        <InputGroup mb="3">
-            <Form.Input id="token" type="text" value={token} readonly />
-            <InputGroup.Append>
-                <Button outline secondary onClick={() => copyToClickBoard()}>Copiar</Button>
-                <Button outline secondary onClick={() => generateNewToken()}>Generar Token</Button>
-            </InputGroup.Append>
-        </InputGroup>
+        <Card mt="3">
+            <Card.Body>
+                <Card.Title> Genere un nuevo token para poner en su web</Card.Title>
+                <InputGroup mb="3">
+                    <Form.Input id="token" type="text" value={token} readonly />
+                    <InputGroup.Append>
+                        <Button outline secondary onClick={() => copyToClickBoard()}>Copiar</Button>
+                        <Button outline secondary onClick={() => generateNewToken()}>Generar Token</Button>
+                    </InputGroup.Append>
+                </InputGroup>
+            </Card.Body>
+        </Card>
     )
 }
 
