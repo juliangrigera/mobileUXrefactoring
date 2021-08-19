@@ -16,7 +16,11 @@ const ModalConfirmDelete = (props) => {
         });
         const body = await response.json();
         console.log(body);
-        if (response.status !== 200) {
+        if (!body.success && body.success!=='undefined') {
+            if(body.status===403){
+                localStorage.removeItem('token');
+                localStorage.removeItem('usertoken');
+            }
             throw Error(body.message)
         }
         return body;

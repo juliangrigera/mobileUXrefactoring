@@ -33,13 +33,17 @@ const UpdateForm = (props) => {
                             "authorization": localStorage.getItem('token') }
             })
         const body = await response.json();
-        if (response.status !== 200) {
+        if (!body.success && body.success!=='undefined') {
+            if(body.status===403){
+                localStorage.removeItem('token');
+                localStorage.removeItem('usertoken');
+            }
             throw Error(body.message)
         }
-        if(body.success){
+        /*if(body.success){
             
         }
-        /*else{
+        else{
             indicar el motivo de error
         }*/
         console.log(body.token);

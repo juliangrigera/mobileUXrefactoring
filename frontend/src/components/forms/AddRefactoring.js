@@ -57,10 +57,14 @@ const AddRefactoringForm = () => {
                     "authorization": localStorage.getItem('token')
                 }
             })
-        console.log(response);
-        //const body = await response.json();
-        if (response.status !== 200) {
-            throw Error()
+        //console.log(response);
+        const body = await response.json();
+        if (!body.success && body.success!=='undefined') {
+            if(body.status===403){
+                localStorage.removeItem('token');
+                localStorage.removeItem('usertoken');
+            }
+            throw Error(body.message)
         }
         else {
             history.replace('./refactorings');
@@ -76,7 +80,11 @@ const AddRefactoringForm = () => {
         const response = await fetch('/refactorings/all');
         const body = await response.json();
         console.log(body);
-        if (response.status !== 200) {
+        if (!body.success && body.success!=='undefined') {
+            if(body.status===403){
+                localStorage.removeItem('token');
+                localStorage.removeItem('usertoken');
+            }
             throw Error(body.message)
         }
         return body;

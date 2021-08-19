@@ -14,11 +14,15 @@ function Users() {
             headers:{"authorization": localStorage.getItem('token')}
         });
         const body = await response.json();
-        //console.log(body);
-        if (response.status !== 200) {
+        console.log(body);
+        if ( body.success!=='undefined' && !body.success ) {
+            if(body.status===403){
+                localStorage.removeItem('token');
+                localStorage.removeItem('usertoken');
+            }
             throw Error(body.message)
         }
-        return body;
+        return body.user;
     };
 
     return (

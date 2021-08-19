@@ -25,11 +25,13 @@ const CheckBoxVersions = () => {
             }
         })
         const body = await response.json();
-        if(response.status !== 200){
+        if (!body.success && body.success!=='undefined') {
+            if(body.status===403){
+                localStorage.removeItem('token');
+                localStorage.removeItem('usertoken');
+            }
             throw Error(body.message)
         }
-        console.log(response)
-        console.log(body);
         return body.versions;
     }
 
