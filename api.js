@@ -78,7 +78,10 @@ app.get('/users/:userToken', authenticateToken, cors(), async (req, res) => {
   //const refactorings = await getRefactorings(req.params.userToken);
   console.log(req.params.userToken)
   const user = await getUserByToken(req.params.userToken)
-  res.json(user[0]).status(200).end();
+  res.json({
+    user:user[0],
+    success:true
+  }).status(200).end();
 })
 
 
@@ -318,11 +321,19 @@ function generateToken(length) {
 function authenticateToken(req, res, next) {
   const token = req.headers['authorization']
 
-  if (token == null) return res.sendStatus(401)
+  if (token == null) return res.json({
+    mensaje: "Error, no existe el token",
+    success: false,
+    status: 401
+  }).status(401).end()
 
   jwt.verify(token, process.env.TOKEN_SECRET.toString(), (err, user) => {
     //console.log(err)
-    if (err) return res.sendStatus(403)
+    if (err) return res.json({
+      mensaje: "Error, no tiene permiso para esta seccion",
+      success: false,
+      status: 403
+    }).status(403).end()
     req.user = user
     next()
   })
