@@ -32,23 +32,23 @@ const INITIAL_FUNCTIONS = [
 ]
 
 const FUNCTIONS_REFACTORING = {
-    'enlargeHitbox': function enlargeHitbox(pathDom, elemStyle) {
+    'enlargeHitbox': [function enlargeHitbox(pathDom, elemStyle) {
         // obtengo todos elementos del path.
         //var pathLinks = pathsElements(pathDom + '//a');
         var pathLinks = pathsElements(pathDom);
         if (pathLinks.length > 0) {
             applyStyleChanges(pathLinks, elemStyle);
         }
-    },
-    'buttonizeSimple': function buttonizeSimple(element) {
+    }, { "description": "Se utiliza para ampliar el contorno de los links" }],
+    'buttonizeSimple': [function buttonizeSimple(element) {
         // Changes underscored text to button with border
 
         let borderWidth = 1;
         element.style.border = borderWidth + "px solid " + element.style.color;
         makeButton(element);
         element.innerHTML = capitalize(element);
-    },
-    'buttonizeShaded': function buttonizeShaded(element) {
+    }, { "description": "" }],
+    'buttonizeShaded': [function buttonizeShaded(element) {
         // Changes underscored text to button with no border and slightly shaded background
 
         let shade = 0.1;
@@ -57,8 +57,8 @@ const FUNCTIONS_REFACTORING = {
         element.style.backgroundColor = `rgba(${newBackgroundColor[0]}, ${newBackgroundColor[1]}, ${newBackgroundColor[2]}, ${shade})`;
         makeButton(element);
         element.innerHTML = capitalize(element);
-    },
-    'buttonizeSolid': function buttonizeSolid(element) {
+    }, { "description": "" }],
+    'buttonizeSolid': [function buttonizeSolid(element) {
         // Changes undescored text to button with no border and solid background. Inverted colors.
 
         let newBackgroundColor = window.getComputedStyle(element).color;
@@ -69,8 +69,8 @@ const FUNCTIONS_REFACTORING = {
         element.style.background = newBackgroundColor;
         makeButton(element);
         element.innerHTML = capitalize(element);
-    },
-    'reduceText': function reduceText(pathDom, porcentage) {
+    }, { "description": "" }],
+    'reduceText': [function reduceText(pathDom, porcentage) {
         // Obtengo los <p> del path 
         var pList = pathsElements(pathDom + '//p');
         //Necesito obtener el total de caracteres de los parrafos.
@@ -88,7 +88,7 @@ const FUNCTIONS_REFACTORING = {
             sumLength += pList[pNum].innerText.length;
         }
 
-        var tagPBeforeCut =  pList[pNum].innerHTML;// guardo el <p> original antes de cortarlo
+        var tagPBeforeCut = pList[pNum].innerHTML;// guardo el <p> original antes de cortarlo
         //Corto el texto.
         if (pNum > 0) {
             pList[pNum].innerText = pList[pNum].innerText.slice(0, sumLength - sizeTextPermitted);
@@ -101,42 +101,42 @@ const FUNCTIONS_REFACTORING = {
         applyStyleChanges(subPList, { 'display': 'none' })
 
         //Creo el link del final y lo añado
-        var link=document.createElement('a');
+        var link = document.createElement('a');
         //Le agrego un Listener para que cuando se haga click muestre el texto completo
-        link.addEventListener("click", function() {
-            applyStyleChanges(subPList, {'display':'block'});
+        link.addEventListener("click", function () {
+            applyStyleChanges(subPList, { 'display': 'block' });
             pList[pNum].innerHTML = tagPBeforeCut;
             this.style.display = 'none';
         });
         link.innerHTML = " Leer más..."
         pList[pNum].appendChild(link);
 
-    },
-    'replaceLabelforPlaceholder': function replaceLabelforPlaceholder(pathDom){
+    }, { "description": "Reduce el texto al porcentaje indicado, y le agrega un link 'leer mas...' para retomar su tamaño original" }],
+    'replaceLabelforPlaceholder': [function replaceLabelforPlaceholder(pathDom) {
         //Obtener los labels del formulario
-        var labels = pathsElements(pathDom+'//label');
+        var labels = pathsElements(pathDom + '//label');
 
         //Genero un map donde el valor de for es la clave y el texto de este es el valor 
         var mapLabels = new Map();
-        labels.forEach( label => {
+        labels.forEach(label => {
             mapLabels.set(label.attributes["for"].value, label.textContent)
         });
         //Escondo los labes.
         applyStyleChanges(labels, { 'display': 'none' })
 
         //Obtengo los inputs del formulario
-        var inputs = pathsElements(pathDom+'//input');
+        var inputs = pathsElements(pathDom + '//input');
 
         // Como el atributo "for" del label hace match con el id del input,
         // busco los inputs con ese id y modifico su placeholder.
-        inputs.forEach( input => {
-            if(mapLabels.get(input.getAttribute('id'))!= undefined){
+        inputs.forEach(input => {
+            if (mapLabels.get(input.getAttribute('id')) != undefined) {
                 input.setAttribute("placeholder", mapLabels.get(input.attributes["id"].value))
             }
         });
         //Limitaciones: tiene que haber un "for" en el label. Queda pendiente por ahora, el caso de 
         // q no exista un for para el input. 
-    }
+    }, { "description": "Saca los label de los input para colocarlos como placeholders en estos mismos" }],
 }
 
 module.exports = {
