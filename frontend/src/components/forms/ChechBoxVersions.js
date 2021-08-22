@@ -14,7 +14,6 @@ const CheckBoxVersions = () => {
 
     useEffect(() => {
         getData().then(data => {setVersions(data)}).catch(e => console.log(e));
-        console.log("hola");
     }, [])
     const getData = async () => {
         const response = await fetch('/versions/' + localStorage.getItem('usertoken'),
@@ -46,6 +45,7 @@ const CheckBoxVersions = () => {
     }
     
     return(<Form.Group>
+        <label> <strong>Versiones a la que será aplicado</strong></label><br/>
          {versions.length > 0 ?
                             checkItems(versions)
                             : <option>loading...</option>
