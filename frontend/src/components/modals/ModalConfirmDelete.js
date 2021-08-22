@@ -1,11 +1,14 @@
 import React from 'react';
 import { Modal, Button, Alert } from 'bootstrap-4-react';
 
+
 const ModalConfirmDelete = (props) => {
-    
+
+
+
     const deleteRefactoring = async () => {
         const response = await fetch('/refactorings/delete/' + localStorage.getItem('usertoken'), {
-            method: 'POST',
+            method: 'PUT',
                 body: JSON.stringify({
                     id: props.refactoring._id
                 }),
@@ -22,12 +25,13 @@ const ModalConfirmDelete = (props) => {
                 localStorage.removeItem('usertoken');
             }
             throw Error(body.message)
+        }else{
         }
         return body;
     };
     
     return (
-        <Modal id="deleteConfirm" fade>
+        <Modal id="deleteConfirm" fade  >
             <Modal.Dialog centered sm >
                 <Modal.Content>
                     <Modal.Body>
