@@ -79,8 +79,8 @@ app.get('/users/:userToken', authenticateToken, cors(), async (req, res) => {
   console.log(req.params.userToken)
   const user = await getUserByToken(req.params.userToken)
   res.json({
-    user:user[0],
-    success:true
+    user: user[0],
+    success: true
   }).status(200).end();
 })
 
@@ -193,7 +193,7 @@ app.get('/refactor/:userToken/:versionTag', cors(), async (req, res) => {
   var stream = '';
   INITIAL_FUNCTIONS.forEach(func => stream += func.toString());
   for (r of refactorings) {
-    for (element of r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refName], element, r.params);
+    for (element of r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refName][0], element, r.params);
   }
   //console.log(stream);
 
@@ -204,9 +204,19 @@ app.get('/refactor/:userToken/:versionTag', cors(), async (req, res) => {
 app.get('/refactorings/all', cors(), (req, res) => {
   console.log(Object.keys(FUNCTIONS_REFACTORING));
   refactoringsName = Object.keys(FUNCTIONS_REFACTORING);
+  descriptions = [];
+  //let temp =  refDescription;
+  refactoringsName.forEach((name) => {
+    var des = {
+      name,
+      description: FUNCTIONS_REFACTORING[name][1].description
+    }
+    descriptions.push(des)
+  });
   res.json({
     success: true,
-    refactorings: refactoringsName
+    refactorings: refactoringsName,
+    descriptions: descriptions
   })
 })
 
