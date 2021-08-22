@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Form, Button } from 'bootstrap-4-react';
+import { Container, Form, Button, Alert } from 'bootstrap-4-react';
 import { useHistory } from 'react-router';
 import CheckBoxVersions from './ChechBoxVersions';
 import Refactoring from '../../context/RefactoringContext';
+import ReduceTextParams from './params/ReduceTextParams';
+import EnlargeHitboxParams from './params/EnlargeHitboxParams';
 
 const AddRefactoringForm = () => {
 
@@ -11,6 +13,8 @@ const AddRefactoringForm = () => {
     const context = useContext(Refactoring)
 
     const [refactorings, setRefactorings] = useState([]);
+
+    const [refDes, setRefDes] = useState([]);
 
     const [datos, setDatos] = useState({
         refName: '',
@@ -31,6 +35,7 @@ const AddRefactoringForm = () => {
             [event.target.name]: event.target.value
         })
     }
+
     const handleSubmit = async (event) => {
         event.preventDefault()
         console.log(datos)
@@ -42,14 +47,16 @@ const AddRefactoringForm = () => {
             'elements': elementsArray
         })
         console.log(typeof (datos.params))
-        let paramsJSON = JSON.parse(datos.params);
+        //let paramsJSON = JSON.parse(datos.params);
+        console.log(context.params)
+
         const response = await fetch('/refactorings/' + localStorage.getItem('usertoken'),
             {
                 method: 'POST',
                 body: JSON.stringify({
                     refName: datos.refName,
                     elements: elementsArray,
-                    params: paramsJSON,
+                    params: context.params,
                     versions: context.versions
                 }),
                 headers: {
@@ -59,8 +66,8 @@ const AddRefactoringForm = () => {
             })
         //console.log(response);
         const body = await response.json();
-        if (!body.success && body.success!=='undefined') {
-            if(body.status===403){
+        if (!body.success && body.success !== 'undefined') {
+            if (body.status === 403) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('usertoken');
             }
@@ -73,15 +80,15 @@ const AddRefactoringForm = () => {
     }
 
     useEffect(() => {
-        getData().then(data => setRefactorings(data.refactorings)).catch(e => console.log(e))
+        getData().then(data => { setRefactorings(data.refactorings); setRefDes(data.descriptions) }).catch(e => console.log(e))
     }, [])
     const getData = async () => {
         //console.log(localStorage.getItem('token'));
         const response = await fetch('/refactorings/all');
         const body = await response.json();
         console.log(body);
-        if (!body.success && body.success!=='undefined') {
-            if(body.status===403){
+        if (!body.success && body.success !== 'undefined') {
+            if (body.status === 403) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('usertoken');
             }
@@ -91,34 +98,57 @@ const AddRefactoringForm = () => {
     };
     //Devuelve la lista de nombres de los refactorings para las opciones del campo select
     const refactoringsNames = (refactoringsArray) => {
-        const result = refactoringsArray.map((name) =>
-            <option>{name}</option>
+        const result = [];
+        refactoringsArray.forEach((name, index) =>
+            result.push(<option>{name}</option>)
         )
         return result;
     }
-    
 
+    //Devolver el componente de parametros de acuerdo al Refactoring elegido en el select
+    const showParamsComponents = () => {
+        switch (datos.refName) {
+            case "reduceText":
+                return <ReduceTextParams />
+            case "enlargeHitbox":
+                return <EnlargeHitboxParams />
+            default:
+                return <p><strong>Este Refactoring NO lleva parametros</strong></p>
+        }
+    }
+
+    //Devolver la descripcion de los refactoring
+    const showDescription = () => {
+        let res = ""
+        try {
+            res = refDes.find(elem => elem.name === datos.refName).description
+        } catch (error) {
+            console.log(error)
+        }
+        return (<p>{res}</p>);
+        
+    }
     return (
         <Container>
             <Form onSubmit={handleSubmit}>
                 <CheckBoxVersions />
                 <Form.Group>
-                    <label htmlFor="refName">Refactoring:</label>
+                    <label htmlFor="refName"><strong>Refactoring:</strong></label>
                     <Form.Select required name="refName" id="refName" onChange={handleInputChange}  >
                         {refactorings.length > 0 ?
                             refactoringsNames(refactorings)
                             : <option>loading...</option>
                         }
                     </Form.Select>
+                    <Alert info>
+                        {showDescription()}</Alert>
                 </Form.Group>
                 <Form.Group>
-                    <label htmlFor="elements">XPaths</label>
+                    <label htmlFor="elements"><strong>XPaths</strong></label><br />
+                    <small className="text-info">Los Path deben estan separados por ";".(ej: /html/body//a; /div/a//p;)</small>
                     <Form.Input required name="elements" type="text" id="elements" onChange={handleInputChange} placeholder="ej: /html/body//a; /div/a//p;" />
                 </Form.Group>
-                <Form.Group>
-                    <label htmlFor="params">Parametros</label>
-                    <Form.Textarea required name="params" id="params" onChange={handleInputChange} rows="5"></Form.Textarea>
-                </Form.Group>
+                {showParamsComponents()}
                 <Button primary>Guardar</Button>
             </Form>
         </Container>
