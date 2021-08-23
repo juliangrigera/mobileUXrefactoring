@@ -1,0 +1,14 @@
+HTTrack3.49-2+htsswf+htsjava launched on Mon, 23 Aug 2021 11:13:58 at https://es.reddit.com/ +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar
+(winhttrack -qwC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2A25000%f#f -F "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)" -%F "<!-- Mirrored from %s%s by HTTrack Website Copier/3.x [XR&CO'2014], %s -->" -%l "es, en, *" https://es.reddit.com/ -O1 "C:\Users\AleV_\Documents\GitHub\mobileUXrefactoring\pages\es.reddit" +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+11:13:59	Warning: 	Note: due to https://es.reddit.com remote robots.txt rules, links beginning with these path will be forbidden: / (see in the options to disable this)
+11:15:05	Error: 	"Forbidden" (403) at link https://alb.reddit.com/i.gif?z=gAAAAABhI609E8QgO42vLv1ylTpLgcIbex-8CsylAsPoMl9BPZvKtmby7Am27XKjpKcIXDJRKcGTrYUY7f1e2bhs3zMN3J2ZfeHKrYwhWsfaPgKCdUNyHHONVAtiW7LkAYXK-cFjoOjKqIggGhwEHc162gVrthxFBKkznmkounz9yA0ug2C6qM0= (from https://es.reddit.com/)
+11:15:05	Error: 	"Forbidden" (403) at link https://alb.reddit.com/i.gif?z=gAAAAABhI609YuPGq99GFgUizVNn4P1cuGt_Zg_9HYu_dOkeFDpt_17wq_5x7fF2-sig8egDxY5B_gkN4TeQZzOerHbScNKusvXI66XL-M8eruXKJcHIvsHyI87iI-eySyZfh5FXRc-9jYx8n48UIOLU78--m0a-fL-HjwHsE6dM7jDPjxy0Dbg= (from https://es.reddit.com/)
+
+HTTrack Website Copier/3.49-2 mirror complete in 1 minutes 33 seconds : 164 links scanned, 161 files written (3799371 bytes overall) [2326872 bytes received at 25020 bytes/sec], 2029032 bytes transferred using HTTP compression in 15 files, ratio 24%, 5.2 requests per connection
+(2 errors, 1 warnings, 0 messages)
