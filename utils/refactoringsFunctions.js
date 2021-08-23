@@ -34,8 +34,8 @@ const INITIAL_FUNCTIONS = [
 const FUNCTIONS_REFACTORING = {
     'enlargeHitbox': [function enlargeHitbox(pathDom, elemStyle) {
         // obtengo todos elementos del path.
-        //var pathLinks = pathsElements(pathDom + '//a');
-        var pathLinks = pathsElements(pathDom);
+        var pathLinks = pathsElements(pathDom + '//a');
+        //var pathLinks = pathsElements(pathDom);
         if (pathLinks.length > 0) {
             applyStyleChanges(pathLinks, elemStyle);
         }
