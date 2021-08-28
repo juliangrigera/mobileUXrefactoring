@@ -5,8 +5,7 @@ const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
 const { convertFunctionToString } = require('./utils/functionsToString')
 const { FUNCTIONS_REFACTORING, INITIAL_FUNCTIONS } = require('./utils/refactoringsFunctions')
-const { User, Version } = require('./server/User')
-const Refactoring = require('./server/Refactoring')
+const { User, Version, Refactoring } = require('./server/User')
 
 /*------app.use-------*/
 app.use(cors())
@@ -167,7 +166,9 @@ app.post('/versions/:userToken', cors(), async (req, res) => {
 //Update version for a user token and version tag
 app.put('/versions/:userToken/:versionTag', cors(), async (req, res) => {
 
-  //Deberia chequear por no pisar tags existentes si ya existe otro
+  //Buscar si existe una version con ese nuevo tag
+  //Si no existe, modifico los datos
+  //Recorro todos los refactorings y modifico los tags
 
 })
 
@@ -175,9 +176,42 @@ app.put('/versions/:userToken/:versionTag', cors(), async (req, res) => {
 //Delete version for a user token and version tag
 app.delete('/versions/:userToken/:versionTag', cors(), async (req, res) => {
 
-  //Deberia chequear por referencia desde refactorings o borrar todo?
+  connect()
+  const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
+  let versionRemove = document[0].versions.find(version => version.tag == req.params.versionTag);
+  if(versionRemove){
+    for (let refactoring of document[0].refactorings){
+      if (refactoring.tags.includes(versionRemove.tag)){
+        const index = refactoring.tags.indexOf(versionRemove.tag);
+        if (index > -1) {
+          refactoring.tags.splice(index, 1);
+        }
+      }
+      if (refactoring.tags.length === 0){
+        refactoring.refName = undefined;
+      }
+    }
+    document[0].refactorings.pull({ "refName": undefined })
+    document[0].versions.pull(versionRemove);
+  
+    savedDocument = await document[0].save();
+    disconnect()
+    res.json({
+      mensaje: "Version eliminada",
+      success: true
+    }).status(200).end()
+  } else {
+    disconnect()
+    res.json({
+      mensaje: "Error, no se pudo eliminar la version",
+      success: false
+    }).status(300).end()
+  }
 
 })
+
+
+
 
 
 
@@ -242,12 +276,12 @@ app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res)
     elements: data.elements,
     params: data.params,
     versions: data.versions
-  })
+  }) 
 
   connect()
-  await User.findOneAndUpdate(
+  User.findOneAndUpdate(
     { userToken: req.params.userToken },
-    { $push: { refactorings: newRefactoring.datos } },
+    { $push: { refactorings: newRefactoring } },
     (err, suc) => {
       if (err) {
         console.log(err)
@@ -275,20 +309,19 @@ app.put('/refactorings/update/:userToken', authenticateToken, cors(), async (req
   console.log(JSON.parse(req.body.parameters))
 
   const refactoring = req.body.refactoring;
-  refactoring.elements = req.body.xpath;
+  refactoring.elements = req.body.elements;
   refactoring.params = JSON.parse(req.body.parameters);
 
   console.log(refactoring)
   connect()
   await User.updateOne(
-    { 'userToken': req.body.usertoken },
-    { $set: { "$refactorings.$[elem]": refactoring } },
-    { arrayFilters: [{ "elem._id": { $eq: refactoring._id } }] }
+    { 'userToken': req.body.usertoken, 'refactorings._id': req.body.refactoring._id },
+    { $set: { "refactorings.$": refactoring } }
   ).catch(e => console.error(e))
   disconnect()
 })
 
-//Delete one refactoring
+//Delete one refactoring from all versions
 app.put('/refactorings/delete/:userToken', authenticateToken, cors(), async (req, res) => {
 
   connect()
@@ -311,6 +344,37 @@ app.put('/refactorings/delete/:userToken', authenticateToken, cors(), async (req
   }
 
 })
+
+//Delete one refactoring from one version
+app.put('/refactorings/delete/:userToken/:versionTag', authenticateToken, cors(), async (req, res) => {
+
+  connect()
+  const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
+  let itemRemove = document[0].refactorings.find(refactoring => refactoring._id == req.body.id);
+  if (itemRemove) {
+
+    if (itemRemove.tags.length > 1){
+      itemRemove.tags.pull(req.params.versionTag);
+    } else {
+      document[0].refactorings.pull(itemRemove);
+    }
+
+    savedDocument = await document[0].save();
+    disconnect()
+    res.json({
+      mensaje: "Refactoring eliminado",
+      success: true
+    }).status(200).end()
+  } else {
+    disconnect()
+    res.json({
+      mensaje: "Error, no se pudo eliminar el refactoring",
+      success: false
+    }).status(300).end()
+  }
+
+})
+
 
 
 

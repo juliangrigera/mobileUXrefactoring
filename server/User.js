@@ -25,5 +25,6 @@ const userSchema = new Schema({
 
 const User = model('User', userSchema)
 const Version = model('Version', versionSchema)
+const Refactoring = model('Refactoring', refactoringSchema)
 
-module.exports = {User, Version}
+module.exports = {User, Version, Refactoring}
