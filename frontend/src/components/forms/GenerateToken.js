@@ -46,6 +46,7 @@ const GenerateToken = () => {
         <Card mt="3">
             <Card.Body>
                 <Card.Title> Genere un nuevo token para poner en su web</Card.Title>
+                <Card.Text>El token asegura que la union de su pagina web con la aplicacion de refactorings sea confiable.</Card.Text>
                 <InputGroup mb="3">
                     <Form.Input id="token" type="text" value={token} readonly />
                     <InputGroup.Append>

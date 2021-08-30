@@ -14,6 +14,7 @@ import PrivateRoute from './components/utils/PrivateRoute';
 //PAGES
 import AddRefactoringPage from './components/pages/AddRefactoring';
 import RefactoringPage from './components/pages/Refactorings';
+import GettingStartedPage from './components/pages/GettingStarted';
 
 
 ReactDOM.render(
@@ -26,6 +27,7 @@ ReactDOM.render(
           <PrivateRoute path="/user" component={Layout} />
           <PrivateRoute path="/refactorings" component={RefactoringPage} />
           <PrivateRoute path="/addRefactoring" component={AddRefactoringPage} />
+          <PrivateRoute path="/gettingStarted" component={GettingStartedPage} />
       </BrowserRouter>
 
   </React.StrictMode>,

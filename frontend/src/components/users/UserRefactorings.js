@@ -86,7 +86,7 @@ function UserRefactoring(props) {
             </Container>
     }
         <ModalUpdateRefactoring refactoring={refactoring} />
-        <ModalConfirmDelete refactoring={refactoring} />
+        <ModalConfirmDelete refactoring={refactoring} tag={props.tag} />
     </div>)
 }
 
