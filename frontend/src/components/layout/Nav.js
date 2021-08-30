@@ -12,6 +12,7 @@ export default class NavPrimary extends Component {
                     <Nav.Item dropdown>
                         <Nav.Link dropdownToggle>Refactoring</Nav.Link>
                         <Dropdown.Menu>
+                            <Dropdown.Item href="/gettingStarted" >Empezando</Dropdown.Item>
                             <Dropdown.Item href="/refactorings">Detalles</Dropdown.Item>
                             <Dropdown.Item href="/addRefactoring">Agregar Nuevo</Dropdown.Item>
                         </Dropdown.Menu>
