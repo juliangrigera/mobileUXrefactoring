@@ -163,12 +163,70 @@ app.post('/versions/:userToken', cors(), async (req, res) => {
 
 })
 
-//Update version for a user token and version tag
-app.put('/versions/:userToken/:versionTag', cors(), async (req, res) => {
+//Update version for a user token and the version current tag, the new version data inside the request
+app.put('/versions/:userToken/:currentTag', cors(), async (req, res) => {
 
   //Buscar si existe una version con ese nuevo tag
   //Si no existe, modifico los datos
   //Recorro todos los refactorings y modifico los tags
+
+  const modifiedVersion = req.body.version;
+
+  connect()
+  if (req.params.currentTag === modifiedVersion.tag){
+
+    await User.updateOne(
+      { 'userToken': req.params.userToken, 'versions._id': modifiedVersion.id },
+      { $set: { "versions.$": modifiedVersion } }
+    ).catch(e => console.error(e))
+
+    disconnect()
+    res.json({
+      mensaje: "Version actualizada",
+      success: true
+    }).status(200).end()
+
+  } else {
+
+    const foundVersionWithTag = await User.aggregate([
+      { $match: { 'userToken': req.params.userToken } },
+      { $unwind: "$versions" },
+      { $replaceRoot: { newRoot: "$versions" } },
+      { $match: { 'tag': modifiedVersion.tag } }
+    ]).catch(e => console.error(e))
+
+    if (foundVersionWithTag){
+
+      disconnect()
+      res.json({
+        mensaje: "Error, no se pudo actualizar la version, el tag debe ser único",
+        success: false
+      }).status(300).end()
+
+    } else {
+
+      await User.updateOne(
+        { 'userToken': req.params.userToken, 'versions._id': modifiedVersion.id },
+        { $set: { "versions.$": modifiedVersion } }
+      ).catch(e => console.error(e))
+  
+      //This part should modify the tags for every refactoring which has the current tag
+      await User.updateOne(
+        { 'userToken': req.params.userToken, 'refactorings.$[].versions': req.params.currentTag },
+        { $pull: { "refactorings.$[].versions": req.params.currentTag },
+         $push: { "refactorings.$[].versions": modifiedVersion.tag }
+        }
+      )
+
+      disconnect()
+      res.json({
+        mensaje: "Version actualizada",
+        success: true
+      }).status(200).end()
+
+    }
+
+  }
 
 })
 
@@ -315,7 +373,7 @@ app.put('/refactorings/update/:userToken', authenticateToken, cors(), async (req
   console.log(refactoring)
   connect()
   await User.updateOne(
-    { 'userToken': req.body.usertoken, 'refactorings._id': req.body.refactoring._id },
+    { 'userToken': req.params.userToken, 'refactorings._id': req.body.refactoring._id },
     { $set: { "refactorings.$": refactoring } }
   ).catch(e => console.error(e))
   disconnect()
