@@ -6,6 +6,7 @@ const dotenv = require('dotenv')
 const { convertFunctionToString } = require('./utils/functionsToString')
 const { FUNCTIONS_REFACTORING, INITIAL_FUNCTIONS } = require('./utils/refactoringsFunctions')
 const { User, Version, Refactoring } = require('./server/User')
+const updateQuery = require('./utils/updateQuery')
 
 /*------app.use-------*/
 app.use(cors())
@@ -117,10 +118,10 @@ app.post('/versions/:userToken', cors(), async (req, res) => {
   let newVersion = new Version({
     name: data.name,
     description: data.description,
-    qrUrl: data.qrUrl,
+    qrUrl: '',
     tag: data.tag
   })
-  console.log(newVersion);
+
   const foundVersion = await User.aggregate([
     { $match: { 'userToken': req.params.userToken } },
     { $unwind: "$versions" },
@@ -130,7 +131,10 @@ app.post('/versions/:userToken', cors(), async (req, res) => {
 
   if (Object.entries(foundVersion).length === 0) {
 
-    await User.findOneAndUpdate(
+    const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
+    newVersion.qrUrl = updateQuery(document[0].url, "version", data.tag)
+
+    User.findOneAndUpdate(
       { userToken: req.params.userToken },
       { $push: { versions: newVersion } },
       (err, suc) => {

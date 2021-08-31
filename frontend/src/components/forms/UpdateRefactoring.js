@@ -20,13 +20,12 @@ const UpdateForm = (props) => {
         event.preventDefault()
         console.log(datos.xpath)
         console.log(datos.parameters)
-        const response = await fetch('/refactorings/update/'+localStorage.getItem('token'),
+        const response = await fetch('/refactorings/update/'+localStorage.getItem('userToken'),
             {
                 method: 'PUT',
                 body: JSON.stringify({
                     xpath: elementsXpathToArray(datos.xpath),
                     parameters: datos.parameters,
-                    usertoken: localStorage.getItem('usertoken'),
                     refactoring: props.refactoring
                 }),
                 headers: { "Content-Type": "application/json", 

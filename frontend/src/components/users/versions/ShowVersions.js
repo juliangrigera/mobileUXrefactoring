@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { Nav, Tab, Container, Row, Col , Card} from 'bootstrap-4-react/lib/components';
 import UserRefactoring from '../UserRefactorings';
 import QRCode from 'react-qr-code';
+import ModalAddVersion from '../../modals/ModalAddVersion';
 
 const ShowVersions = () => {
     const [versions, setVersion] = useState([])    
@@ -34,6 +35,9 @@ const ShowVersions = () => {
         )
         return (<Nav tabs role="tablist">
                     {listVersions}
+                    <Nav.ItemLink data-toggle="modal" data-target="#addVersionForm">
+                        <h2>+</h2>
+                    </Nav.ItemLink>
                  </Nav>)
     }
 
@@ -72,7 +76,7 @@ const ShowVersions = () => {
     }
     
 
-    return(<Card mt="3">
+    return(<><Card mt="3">
     <Card.Body>
         <Card.Title>Versiones con los refactorings aplicados a cada una de ellas</Card.Title>
              {(versions.length > 0) ?
@@ -84,7 +88,9 @@ const ShowVersions = () => {
                             : <option>loading...</option>
                         }
       </Card.Body>
-      </Card>)
+      </Card>
+      <ModalAddVersion />
+      </>)
 }
 
 export default ShowVersions;
