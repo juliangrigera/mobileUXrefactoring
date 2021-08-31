@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import { Nav, Tab, Container, Row, Col , Card} from 'bootstrap-4-react/lib/components';
 import UserRefactoring from '../UserRefactorings';
 import QRCode from 'react-qr-code';
-import updateQuery from '../../utils/updateQuery';
 
 const ShowVersions = () => {
     const [versions, setVersion] = useState([])    
@@ -60,7 +59,7 @@ const ShowVersions = () => {
                         </Col>
                         <Col>
                             <h4>Codigo QR</h4>
-                            <QRCode id="QRCode" value={updateQuery(version.qrUrl, "version", version.tag)}></QRCode>
+                            <QRCode id="QRCode" value={version.qrUrl}></QRCode>
                         </Col>
                     </Row>
                 </Container>

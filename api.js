@@ -166,10 +166,6 @@ app.post('/versions/:userToken', cors(), async (req, res) => {
 //Update version for a user token and the version current tag, the new version data inside the request
 app.put('/versions/:userToken/:currentTag', cors(), async (req, res) => {
 
-  //Buscar si existe una version con ese nuevo tag
-  //Si no existe, modifico los datos
-  //Recorro todos los refactorings y modifico los tags
-
   const modifiedVersion = req.body.version;
 
   connect()
