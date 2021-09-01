@@ -315,13 +315,13 @@ app.get('/refactorings/all', cors(), (req, res) => {
 //Gets all the refactorings for a user token
 app.get('/refactorings/:userToken', authenticateToken, cors(), async (req, res) => {
   const refactorings = await getRefactorings(req.params.userToken);
-  res.json(refactorings).status(200).end();
+  res.json({refactorings}).status(200).end();
 })
 
 //Gets all the refactorings for a user token and a version tag
 app.get('/refactorings/:userToken/:versionTag', authenticateToken, cors(), async (req, res) => {
   const refactorings = await getRefactorings(req.params.userToken, req.params.versionTag);
-  res.json(refactorings).status(200).end();
+  res.json({refactorings}).status(200).end();
 })
 
 //Creates a new refactoring, taking a user token by params and the refactoring in the request
@@ -381,7 +381,7 @@ app.put('/refactorings/update/:userToken', authenticateToken, cors(), async (req
 
 //Delete one refactoring from all versions
 app.put('/refactorings/delete/:userToken', authenticateToken, cors(), async (req, res) => {
- 
+
   connect()
   const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
   let itemRemove = document[0].refactorings.find(refactoring => refactoring._id == req.body.id);
@@ -497,7 +497,7 @@ async function getRefactorings(userToken, versionTag) {
     });
   }
 
-  disconnect();
+  //disconnect();
 
   return refactorings;
 }
