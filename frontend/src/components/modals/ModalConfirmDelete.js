@@ -3,10 +3,9 @@ import { Modal, Button, Alert, Badge } from 'bootstrap-4-react';
 
 
 const ModalConfirmDelete = (props) => {
-
+    console.log(props.refactoring)
     const deleteRefactoring = async (version='') => {
         let path = localStorage.getItem('usertoken')+version;
-        console.log(path);
         const response = await fetch('/refactorings/delete/' + path, {
             method: 'PUT',
                 body: JSON.stringify({
@@ -18,7 +17,6 @@ const ModalConfirmDelete = (props) => {
                 }
         });
         const body = await response.json();
-        console.log(body);
         if (!body.success && body.success!=='undefined') {
             if(body.status===403){
                 localStorage.removeItem('token');
