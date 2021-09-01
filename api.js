@@ -281,11 +281,11 @@ app.get('/refactor/:userToken/:versionTag', cors(), async (req, res) => {
   const data = req.body;
   const refactorings = await getRefactorings(req.params.userToken, req.params.versionTag);
 
-  //Forms string with code for eval function
+  //Forms string with code for eval function 
   var stream = '';
   INITIAL_FUNCTIONS.forEach(func => stream += func.toString());
   for (r of refactorings) {
-    for (element of r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refName][0], element, r.params);
+    for (element of r.elements) stream += convertFunctionToString(FUNCTIONS_REFACTORING[r.refName][0], element, r.params != undefined ? r.params : '');
   }
   //console.log(stream);
 
@@ -367,7 +367,7 @@ app.put('/refactorings/update/:userToken', authenticateToken, cors(), async (req
   console.log(JSON.parse(req.body.parameters))
 
   const refactoring = req.body.refactoring;
-  refactoring.elements = req.body.elements;
+  refactoring.elements = req.body.xpath;
   refactoring.params = JSON.parse(req.body.parameters);
 
   console.log(refactoring)
@@ -381,7 +381,7 @@ app.put('/refactorings/update/:userToken', authenticateToken, cors(), async (req
 
 //Delete one refactoring from all versions
 app.put('/refactorings/delete/:userToken', authenticateToken, cors(), async (req, res) => {
-
+ 
   connect()
   const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
   let itemRemove = document[0].refactorings.find(refactoring => refactoring._id == req.body.id);
@@ -405,7 +405,7 @@ app.put('/refactorings/delete/:userToken', authenticateToken, cors(), async (req
 
 //Delete one refactoring from one version
 app.put('/refactorings/delete/:userToken/:versionTag', authenticateToken, cors(), async (req, res) => {
-
+ 
   connect()
   const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
   let itemRemove = document[0].refactorings.find(refactoring => refactoring._id == req.body.id);
@@ -430,7 +430,7 @@ app.put('/refactorings/delete/:userToken/:versionTag', authenticateToken, cors()
       success: false
     }).status(300).end()
   }
-
+  
 })
 
 
