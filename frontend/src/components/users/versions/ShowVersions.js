@@ -2,9 +2,28 @@ import React, {useEffect, useState} from 'react';
 import { Nav, Tab, Container, Row, Col , Card} from 'bootstrap-4-react/lib/components';
 import UserRefactoring from '../UserRefactorings';
 import QRCode from 'react-qr-code';
+
+// MODALS
 import ModalAddVersion from '../../modals/ModalAddVersion';
+import ModalConfirmDelete from '../../modals/ModalConfirmDelete';
+import ModalUpdateRefactoring from "../../modals/ModalUpdateRefactoring";
 
 const ShowVersions = () => {
+
+    //---Para pasar de un hijo al padre necesito pasarle una funcion al hijo
+    // en la cual pueda cambiar el valor del estado de la variable del padre
+    const [refactoring, setRefactoring] = useState({
+        refName: "",
+        elements: [String],
+        params: Object
+    });
+    const refactoringToPass = (valor) => {
+        //console.log(valor);
+        setRefactoring(valor);
+        //console.log(refactoring);
+    }
+    //------------------------------------------------------------------
+
     const [versions, setVersion] = useState([])    
 
     useEffect(() => {
@@ -49,7 +68,7 @@ const ShowVersions = () => {
                     <Row pt="2" pb="2">
                         <Col>
                             <Row pt="2" pb="2">
-                                <Col col="8 md-4"><span className="font-weight-bold ">Nombre</span></Col>
+                                <Col col="8 md-4"><span className="font-weight-bold ">Nombre </span></Col>
                                 <Col col="8 md-6">{version.name}</Col>
                             </Row>
                             <Row pt="2" pb="2">
@@ -67,7 +86,7 @@ const ShowVersions = () => {
                         </Col>
                     </Row>
                 </Container>
-                <UserRefactoring tag={version.tag}/>
+                <UserRefactoring tag={version.tag} test={refactoringToPass}/>
             </Tab.Pane>
         )
         return (<Tab.Content>
@@ -89,6 +108,8 @@ const ShowVersions = () => {
                         }
       </Card.Body>
       </Card>
+      <ModalConfirmDelete refactoring={refactoring} />
+      <ModalUpdateRefactoring refactoring={refactoring} />
       <ModalAddVersion />
       </>)
 }
