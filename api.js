@@ -364,18 +364,18 @@ app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res)
 app.put('/refactorings/update/:userToken', authenticateToken, cors(), async (req, res) => {
 
   console.log(req.body);
-  console.log(JSON.parse(req.body.parameters))
+  //console.log(JSON.parse(req.body.parameters))
 
   const refactoring = req.body.refactoring;
   refactoring.elements = req.body.xpath;
-  refactoring.params = JSON.parse(req.body.parameters);
+  refactoring.params = req.body.parameters;
 
   console.log(refactoring)
   connect()
   await User.updateOne(
     { 'userToken': req.params.userToken, 'refactorings._id': req.body.refactoring._id },
     { $set: { "refactorings.$": refactoring } }
-  ).catch(e => console.error(e))
+  ).then(res => console.log(res)).catch(e => console.error(e))
   disconnect()
 })
 
