@@ -1,22 +1,20 @@
-import React, { useState, useContext} from 'react';
+import React, { useState} from 'react';
 import { Form } from 'bootstrap-4-react';
-import Refactoring from '../../../context/RefactoringContext';
 
-const ReduceTextParams = () => {
-    
-    const [porcentage, setPorcentage] = useState("0")
-    const context = useContext(Refactoring);
+const ReduceTextParams = (props) => {
+    const [value, setValue] = useState(props.value !== undefined ? props.value : {"porcentage":0});
 
     const handleInputParams = (event) => {
-        setPorcentage(event.target.value);
-        context.params = {"porcentage":porcentage};
+        setValue({"porcentage":event.target.value});
+        const func = props.bind;
+        func({"porcentage":event.target.value});
     }
-        
+    console.log(value);
         return (
             <Form.Group>
                 <label htmlFor="porcentage">Porcentaje que desea reducir</label>
-                <Form.CustomRange id="porcentage" onChange={handleInputParams} value={porcentage}/>
-                <p>{porcentage}</p>
+                <Form.CustomRange id="porcentage" onChange={handleInputParams} value={value.porcentage}/>
+                 <p>{value.porcentage}</p>
             </Form.Group>
         )
 }

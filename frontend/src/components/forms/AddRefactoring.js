@@ -2,15 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Container, Form, Button, Alert } from 'bootstrap-4-react';
 import { useHistory } from 'react-router';
 import CheckBoxVersions from './ChechBoxVersions';
-import Refactoring from '../../context/RefactoringContext';
 import ReduceTextParams from './params/ReduceTextParams';
 import EnlargeHitboxParams from './params/EnlargeHitboxParams';
 
 const AddRefactoringForm = () => {
 
     const history = useHistory();
-
-    const context = useContext(Refactoring)
 
     const [refactorings, setRefactorings] = useState([]);
 
@@ -39,25 +36,21 @@ const AddRefactoringForm = () => {
     const handleSubmit = async (event) => {
         event.preventDefault()
         console.log(datos)
-        console.log(context)
         let elementsArray = elementsXpathToArray(datos.elements);
         console.log(elementsArray);
         setDatos({
             ...datos,
             'elements': elementsArray
         })
-        console.log(typeof (datos.params))
-        //let paramsJSON = JSON.parse(datos.params);
-        console.log(context.params)
-
+        console.log(datos.params)
         const response = await fetch('/refactorings/' + localStorage.getItem('usertoken'),
             {
                 method: 'POST',
                 body: JSON.stringify({
                     refName: datos.refName,
                     elements: elementsArray,
-                    params: context.params,
-                    versions: context.versions
+                    params: datos.params,
+                    versions: datos.versions
                 }),
                 headers: {
                     "Content-Type": "application/json",
@@ -105,13 +98,19 @@ const AddRefactoringForm = () => {
         return result;
     }
 
+    const bindingParams = (value) => {
+        setDatos({ ...datos, params: value });
+    }
+    const bindingVersion = (value) => {
+        setDatos({ ...datos, versions: value });
+    }
     //Devolver el componente de parametros de acuerdo al Refactoring elegido en el select
-    const showParamsComponents = () => {
+    const showParamsComponents = (value) => {
         switch (datos.refName) {
             case "reduceText":
-                return <ReduceTextParams />
+                return <ReduceTextParams value={value} bind={bindingParams} />
             case "enlargeHitbox":
-                return <EnlargeHitboxParams />
+                return <EnlargeHitboxParams value={value} bind={bindingParams} />
             default:
                 return <p><strong>Este Refactoring NO lleva parametros</strong></p>
         }
@@ -126,12 +125,12 @@ const AddRefactoringForm = () => {
             console.log(error)
         }
         return (<p>{res}</p>);
-        
+
     }
     return (
         <Container>
             <Form onSubmit={handleSubmit}>
-                <CheckBoxVersions />
+                <CheckBoxVersions bind={bindingVersion} />
                 <Form.Group>
                     <label htmlFor="refName"><strong>Refactoring:</strong></label>
                     <Form.Select required name="refName" id="refName" onChange={handleInputChange}  >

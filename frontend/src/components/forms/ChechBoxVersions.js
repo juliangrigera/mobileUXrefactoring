@@ -1,15 +1,19 @@
-import React, {useState,useEffect, useContext} from 'react';
-import {  Form } from 'bootstrap-4-react';
-import Refactoring from '../../context/RefactoringContext';
+import React, {useState,useEffect} from 'react';
+import { Form } from 'bootstrap-4-react';
 
 
-const CheckBoxVersions = () => {
+const CheckBoxVersions = (props) => {
 
     const [versions, setVersions] = useState([]);
-    const context = useContext(Refactoring);
+    const [checkVersions, setCheckVersions] = useState([]);
+
+    const bindFunction = props.bind;
 
     const handleInputChange = (event) => {
-        context.versions.push(event.target.value);
+        let cVersions = checkVersions;
+        event.target.checked ? cVersions.push(event.target.value) : cVersions = cVersions.filter( function(ver){ return ver !== event.target.value});
+        setCheckVersions(cVersions);
+        bindFunction(cVersions);
     }
 
     useEffect(() => {

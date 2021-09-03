@@ -1,14 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState,  useEffect} from 'react';
 import { Container, Form, Button } from 'bootstrap-4-react';
+
+
+//PARAMS COMPONENTS
+import ReduceTextParams from './params/ReduceTextParams';
+import EnlargeHitboxParams from './params/EnlargeHitboxParams';
 
 const UpdateForm = (props) => {
     
     //const xpathString = elementsXpathToString(props.refactoring.elements);
 
+    console.log(props.refactoring)
+
+    const elementsXpathToString = (vector) => {
+        let cadena='';
+        vector.forEach(element => {
+           cadena += element+';' 
+        });
+        return cadena;
+    }
+
     const [datos, setDatos] = useState({
-        xpath: [],
+        xpath: '',
         parameters: JSON.stringify(props.refactoring.params)
     })
+
+    useEffect(()=> {
+        setDatos({xpath:elementsXpathToString(props.refactoring.elements), parameters: props.refactoring.params});
+        console.log(props.refactoring.elements)
+    },[props.refactoring.elements, props.refactoring.params]) 
 
     const handleInputChange = (event) => {
         setDatos({
@@ -20,6 +40,7 @@ const UpdateForm = (props) => {
         event.preventDefault()
         console.log(datos.xpath)
         console.log(datos.parameters)
+        console.log(datos)
         const response = await fetch('/refactorings/update/'+localStorage.getItem('userToken'),
             {
                 method: 'PUT',
@@ -45,10 +66,13 @@ const UpdateForm = (props) => {
         else{
             indicar el motivo de error
         }*/
-        console.log(body.token);
+        console.log(body);
         
     }
-    console.log(props.refactoring)
+
+    const bindingParams = (value) => {
+        setDatos({ ...datos, parameters:value});
+    }
 
     
     const elementsXpathToArray= (cadena) => {
@@ -57,13 +81,18 @@ const UpdateForm = (props) => {
         return subCadena.split(";");
     }
 
-    const elementsXpathToString = (vector) => {
-        let cadena='';
-        vector.forEach(element => {
-           cadena += element+';' 
-        });
-        return cadena;
+    const showParamsComponents = (value) => {
+        switch (props.refactoring.refName) {
+            case "reduceText":
+                return <ReduceTextParams value={value} bind={bindingParams}/>
+            case "enlargeHitbox":
+                return <EnlargeHitboxParams value={value} bind={bindingParams}/>
+            default:
+                return <p><strong>Este Refactoring NO lleva parametros</strong></p>
+        }
     }
+
+
 
 
     //console.log(elementsXpathToArray(""))
@@ -75,10 +104,7 @@ const UpdateForm = (props) => {
                 <label htmlFor="xpath">XPath</label>
                 <Form.Input name="xpath" type="text" id="xpath" onChange={handleInputChange} placeholder="ej: /html/body//a" value={datos.xpath} />
             </Form.Group>
-            <Form.Group>
-                <label htmlFor="parameters">Parametros</label>
-                <Form.Textarea name="parameters" id="parameters" onChange={handleInputChange} value={datos.parameters} rows="5"></Form.Textarea>
-            </Form.Group>
+            {showParamsComponents(props.refactoring.params)}
             <Button primary w="100">Actualizar</Button>
         </Form>
     </Container>

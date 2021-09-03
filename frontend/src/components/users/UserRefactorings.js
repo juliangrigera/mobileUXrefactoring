@@ -20,14 +20,7 @@ function UserRefactoring(props) {
     });
 
     const context = useContext(Refactoring)
-    const changeContext = (refactoring) => {
-        context.params = refactoring.params;
-        context.refName = refactoring.refName;
-        context.versions = refactoring.versions;
-        context._id = refactoring._id;
-        context.elements = refactoring.elements;
-        console.log(context);
-    }
+
 
     //const history = useHistory();
     useEffect(() => {
@@ -62,7 +55,7 @@ function UserRefactoring(props) {
             <Container style={boxStyle} border mt="4">
                 <Row bg="dark" text="white" p='2'>
                     <Col sm="10" className="text-center"><span className="font-weight-bold ">{refactoring.refName}</span></Col>
-                    <Col sm="1" className="text-right"> <Button primary data-toggle="modal" data-target="#updateForm" onClick={()=>changeContext(refactoring)}><BsPencil /></Button></Col>
+                    <Col sm="1" className="text-right"> <Button primary data-toggle="modal" data-target="#updateForm" onClick={()=>passRefactoring(refactoring)}><BsPencil /></Button></Col>
                     <Col sm="1" className="text-center"><Button primary data-toggle="modal" data-target="#deleteConfirm" onClick={()=> passRefactoring(refactoring)}><BsTrash /></Button></Col>
                 </Row>
                 <Row p='2'>
