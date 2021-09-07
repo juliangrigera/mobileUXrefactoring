@@ -134,6 +134,7 @@ const AddRefactoringForm = () => {
                 <Form.Group>
                     <label htmlFor="refName"><strong>Refactoring:</strong></label>
                     <Form.Select required name="refName" id="refName" onChange={handleInputChange}  >
+                        <option>Elija un refactoring</option>
                         {refactorings.length > 0 ?
                             refactoringsNames(refactorings)
                             : <option>loading...</option>

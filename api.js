@@ -111,7 +111,7 @@ app.get('/versions/:userToken', authenticateToken, cors(), async (req, res) => {
 })
 
 //Create new version for a user token
-app.post('/versions/:userToken', cors(), async (req, res) => {
+app.post('/versions/:userToken', authenticateToken, cors(), async (req, res) => {
 
   const data = req.body;
   connect();
@@ -168,8 +168,71 @@ app.post('/versions/:userToken', cors(), async (req, res) => {
 
 })
 
+//Duplicate version for a user token and version ag
+app.post('/versions/:userToken/:currentTag', authenticateToken, cors(), async (req, res) => {
+
+
+  const data = req.body;
+  let duplicatedVersion = new Version({
+    name: data.name,
+    description: data.description,
+    qrUrl: '',
+    tag: data.tag
+  })
+
+  connect();
+  const foundVersion = await User.aggregate([
+    { $match: { 'userToken': req.params.userToken } },
+    { $unwind: "$versions" },
+    { $replaceRoot: { newRoot: "$versions" } },
+    { $match: { 'tag': data.tag } }
+  ]).catch(e => console.error(e))
+
+  if (Object.entries(foundVersion).length === 0) {
+
+    const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
+    duplicatedVersion.qrUrl = updateQuery(document[0].url, "version", data.tag)
+
+    User.updateOne(
+      { 'userToken': req.params.userToken, 'refactorings.$[].versions': req.params.currentTag },
+      { $push: { "refactorings.$[].versions": duplicatedVersion.tag } }
+    )
+
+    User.updateOne(
+      { userToken: req.params.userToken },
+      { $push: { versions: duplicatedVersion } },
+      (err, suc) => {
+        if (err) {
+          console.log(err)
+          disconnect()
+          res.json({
+            mensaje: err,
+            success: false
+          }).status(300).end()
+        } else {
+          disconnect()
+          res.json({
+            mensaje: suc,
+            success: true
+          }).status(200).end()
+        }
+      }
+    )
+
+  } else {
+
+    disconnect();
+    res.send({
+      mensaje: 'El tag debe ser único',
+      success: false
+    }).status(300).end();
+
+  }
+
+})
+
 //Update version for a user token and the version current tag, the new version data inside the request
-app.put('/versions/:userToken/:currentTag', cors(), async (req, res) => {
+app.put('/versions/:userToken/:currentTag', authenticateToken, cors(), async (req, res) => {
 
   const modifiedVersion = req.body.version;
 
@@ -233,27 +296,32 @@ app.put('/versions/:userToken/:currentTag', cors(), async (req, res) => {
 
 
 //Delete version for a user token and version tag
-app.delete('/versions/:userToken/:versionTag', cors(), async (req, res) => {
+app.delete('/versions/:userToken/:versionTag', authenticateToken, cors(), async (req, res) => {
 
   connect()
   const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
   let versionRemove = document[0].versions.find(version => version.tag == req.params.versionTag);
   if(versionRemove){
     for (let refactoring of document[0].refactorings){
-      if (refactoring.tags.includes(versionRemove.tag)){
-        const index = refactoring.tags.indexOf(versionRemove.tag);
+      if (refactoring.versions.includes(versionRemove.tag)){
+        const index = refactoring.versions.indexOf(versionRemove.tag);
         if (index > -1) {
-          refactoring.tags.splice(index, 1);
+          refactoring.versions.splice(index, 1);
         }
       }
-      if (refactoring.tags.length === 0){
-        refactoring.refName = undefined;
+      if (refactoring.versions.length === 0){
+        refactoring.refName = "toDelete";
       }
     }
-    document[0].refactorings.pull({ "refName": undefined })
     document[0].versions.pull(versionRemove);
-  
     savedDocument = await document[0].save();
+
+    await User.updateOne(
+      { userToken: req.params.userToken},
+      { $pull: { refactorings: { refName: "toDelete" } } },
+      { multi: true }
+    )
+
     disconnect()
     res.json({
       mensaje: "Version eliminada",
@@ -364,14 +432,10 @@ app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res)
 //Update
 app.put('/refactorings/update/:userToken', authenticateToken, cors(), async (req, res) => {
 
-  console.log(req.params.userToken);
-  //console.log(JSON.parse(req.body.parameters))
-
   const refactoring = req.body.refactoring;
   refactoring.elements = req.body.xpath;
   refactoring.params = req.body.parameters;
 
-  console.log(refactoring._id)
   connect()
   await User.updateOne(
     { 'userToken': req.params.userToken, 'refactorings._id': mongoose.Types.ObjectId(refactoring._id) },
