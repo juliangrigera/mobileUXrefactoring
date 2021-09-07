@@ -41,7 +41,7 @@ const UpdateForm = (props) => {
         console.log(datos.xpath)
         console.log(datos.parameters)
         console.log(datos)
-        const response = await fetch('/refactorings/update/'+localStorage.getItem('userToken'),
+        const response = await fetch('/refactorings/update/'+localStorage.getItem('usertoken'),
             {
                 method: 'PUT',
                 body: JSON.stringify({

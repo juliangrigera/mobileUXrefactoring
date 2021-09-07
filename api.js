@@ -1,4 +1,5 @@
 const express = require('express'), app = express(), PORT = 3001
+const mongoose = require('mongoose')
 const { connect, disconnect } = require('./server/mongo')
 var cors = require('cors')
 const jwt = require('jsonwebtoken')
@@ -363,20 +364,28 @@ app.post('/refactorings/:userToken', authenticateToken, cors(), async (req, res)
 //Update
 app.put('/refactorings/update/:userToken', authenticateToken, cors(), async (req, res) => {
 
-  console.log(req.body);
+  console.log(req.params.userToken);
   //console.log(JSON.parse(req.body.parameters))
 
   const refactoring = req.body.refactoring;
   refactoring.elements = req.body.xpath;
   refactoring.params = req.body.parameters;
 
-  console.log(refactoring)
+  console.log(refactoring._id)
   connect()
   await User.updateOne(
-    { 'userToken': req.params.userToken, 'refactorings._id': req.body.refactoring._id },
-    { $set: { "refactorings.$": refactoring } }
-  ).then(res => console.log(res)).catch(e => console.error(e))
+    { 'userToken': req.params.userToken, 'refactorings._id': mongoose.Types.ObjectId(refactoring._id) },
+    { $set: { 
+      'refactorings.$.elements': refactoring.elements,
+      'refactorings.$.params': refactoring.params
+    }},{'new': true, 'safe': true, 'upsert': true}
+  ).catch(e => console.error(e))
   disconnect()
+  res.json({
+      mensaje: "Refactoring actualizado con exito",
+      success: true
+    }).status(200).end()
+  
 })
 
 //Delete one refactoring from all versions
