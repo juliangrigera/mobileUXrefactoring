@@ -193,31 +193,24 @@ app.post('/versions/:userToken/:currentTag', authenticateToken, cors(), async (r
     const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
     duplicatedVersion.qrUrl = updateQuery(document[0].url, "version", data.tag)
 
-    User.updateOne(
-      { 'userToken': req.params.userToken, 'refactorings.$[].versions': req.params.currentTag },
-      { $push: { "refactorings.$[].versions": duplicatedVersion.tag } }
-    )
-
-    User.updateOne(
-      { userToken: req.params.userToken },
-      { $push: { versions: duplicatedVersion } },
-      (err, suc) => {
-        if (err) {
-          console.log(err)
-          disconnect()
-          res.json({
-            mensaje: err,
-            success: false
-          }).status(300).end()
-        } else {
-          disconnect()
-          res.json({
-            mensaje: suc,
-            success: true
-          }).status(200).end()
-        }
-      }
-    )
+    for (let refactoring of document[0].refactorings){
+      if (refactoring.versions.includes(req.params.currentTag)) refactoring.versions.push(duplicatedVersion.tag)
+    }
+    document[0].versions.push(duplicatedVersion);
+    savedDocument = await document[0].save().catch((err) => {
+      console.log(err)
+      disconnect()
+      res.json({
+        mensaje: err,
+        success: false
+      }).status(300).end()
+    }).then(()=>{
+      disconnect()
+      res.json({
+        mensaje: 'Versión duplicada con éxito',
+        success: true
+      }).status(200).end()
+    });
 
   } else {
 
@@ -317,7 +310,7 @@ app.delete('/versions/:userToken/:versionTag', authenticateToken, cors(), async 
     savedDocument = await document[0].save();
 
     await User.updateOne(
-      { userToken: req.params.userToken},
+      { userToken: req.params.userToken },
       { $pull: { refactorings: { refName: "toDelete" } } },
       { multi: true }
     )

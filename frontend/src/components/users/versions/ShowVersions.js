@@ -4,6 +4,7 @@ import { BsTrash, BsPencil, BsFillLayersFill } from "react-icons/bs";
 import UserRefactoring from '../UserRefactorings';
 import QRCode from 'react-qr-code';
 import ModalConfirmDeleteVersion from '../../modals/ModalConfirmDeleteVersion';
+import ModalDuplicateVersion from '../../modals/ModalDuplicateVersion';
 
 // MODALS
 import ModalAddVersion from '../../modals/ModalAddVersion';
@@ -88,19 +89,20 @@ const ShowVersions = () => {
                         </Col>
                         <Col md="auto">
                             <Row pt="2" pb="2">
-                                <Button primary data-toggle="modal" data-target="#"><BsPencil /> Editar Versión</Button>
+                                <Button primary data-toggle="modal" data-target={"#modify-" + version.tag}><BsPencil /> Editar Versión</Button>
                             </Row>
                             <Row pt="2" pb="2">
-                                <Button primary data-toggle="modal" data-target="#"><BsFillLayersFill /> Duplicar Versión</Button>
+                                <Button primary data-toggle="modal" data-target={"#duplicate-" + version.tag}><BsFillLayersFill /> Duplicar Versión</Button>
                             </Row>
                             <Row pt="2" pb="2">
-                                <Button primary data-toggle="modal" data-target={"#delete-" + version.tag}><BsTrash /> Eliminar Versión</Button>
+                                <Button danger data-toggle="modal" data-target={"#delete-" + version.tag}><BsTrash /> Eliminar Versión</Button>
                             </Row>
                         </Col>
                     </Row>
                 </Container>
                 <UserRefactoring tag={version.tag} test={refactoringToPass}/>
                 <ModalConfirmDeleteVersion version={version} />
+                <ModalDuplicateVersion version={version} />
             </Tab.Pane>
         )
         return (<Tab.Content>
