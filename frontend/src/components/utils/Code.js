@@ -25,7 +25,7 @@ function Code() {
                     + 'let userToken = "' + localStorage.getItem('usertoken') + '";\n'
                     + 'function load() {\n'
                     + '  var xhr = new XMLHttpRequest();\n'
-                    + '  xhr.open("GET", "http://localhost:3000/refactor/" + userToken + "/" + versionTag, false);\n'
+                    + '  xhr.open("GET", "http://localhost:3001/refactor/" + userToken + "/" + versionTag, false);\n'
                     + '  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");\n'
                     + '  xhr.send();\n'
                     + '  if (xhr.status == 200){\n'
