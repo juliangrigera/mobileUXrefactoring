@@ -191,13 +191,13 @@ app.post('/versions/:userToken/:currentTag', authenticateToken, cors(), async (r
   if (Object.entries(foundVersion).length === 0) {
 
     const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
-    duplicatedVersion.qrUrl = updateQuery(document[0].url, "version", data.tag)
+    duplicatedVersion.qrUrl = updateQuery(document[0].url, "version", duplicatedVersion.tag)
 
     for (let refactoring of document[0].refactorings){
       if (refactoring.versions.includes(req.params.currentTag)) refactoring.versions.push(duplicatedVersion.tag)
     }
     document[0].versions.push(duplicatedVersion);
-    savedDocument = await document[0].save().catch((err) => {
+    await document[0].save().catch((err) => {
       console.log(err)
       disconnect()
       res.json({
@@ -227,14 +227,25 @@ app.post('/versions/:userToken/:currentTag', authenticateToken, cors(), async (r
 //Update version for a user token and the version current tag, the new version data inside the request
 app.put('/versions/:userToken/:currentTag', authenticateToken, cors(), async (req, res) => {
 
-  const modifiedVersion = req.body.version;
+  const data = req.body;
+  let modifiedVersion = new Version({
+    name: data.name,
+    description: data.description,
+    qrUrl: "",
+    tag: data.tag
+  })
+  console.log(modifiedVersion)
 
   connect()
   if (req.params.currentTag === modifiedVersion.tag){
 
+    console.log("Tag is the same")
     await User.updateOne(
-      { 'userToken': req.params.userToken, 'versions._id': modifiedVersion.id },
-      { $set: { "versions.$": modifiedVersion } }
+      { 'userToken': req.params.userToken, 'versions._id': data.id },
+      { $set: { 
+        "versions.$.name": modifiedVersion.name,
+        "versions.$.description": modifiedVersion.description
+      } }
     ).catch(e => console.error(e))
 
     disconnect()
@@ -245,6 +256,7 @@ app.put('/versions/:userToken/:currentTag', authenticateToken, cors(), async (re
 
   } else {
 
+    console.log("Tag has changed")
     const foundVersionWithTag = await User.aggregate([
       { $match: { 'userToken': req.params.userToken } },
       { $unwind: "$versions" },
@@ -252,7 +264,7 @@ app.put('/versions/:userToken/:currentTag', authenticateToken, cors(), async (re
       { $match: { 'tag': modifiedVersion.tag } }
     ]).catch(e => console.error(e))
 
-    if (foundVersionWithTag){
+    if (Object.entries(foundVersionWithTag).length !== 0){
 
       disconnect()
       res.json({
@@ -262,22 +274,26 @@ app.put('/versions/:userToken/:currentTag', authenticateToken, cors(), async (re
 
     } else {
 
-      await User.updateOne(
-        { 'userToken': req.params.userToken, 'versions._id': modifiedVersion.id },
-        { $set: { "versions.$": modifiedVersion } }
-      ).catch(e => console.error(e))
+      const document = await User.find({ 'userToken': req.params.userToken }).catch((e) => console.log(e));
+      modifiedVersion.qrUrl = updateQuery(document[0].url, "version", modifiedVersion.tag)
   
       //This part should modify the tags for every refactoring which has the current tag
+      for (let refactoring of document[0].refactorings){
+        if (refactoring.versions.includes(req.params.currentTag)){
+          refactoring.versions.pull(req.params.currentTag);
+          refactoring.versions.push(modifiedVersion.tag);
+        } 
+      }
+      await document[0].save()
+
       await User.updateOne(
-        { 'userToken': req.params.userToken, 'refactorings.$[].versions': req.params.currentTag },
-        { $pull: { "refactorings.$[].versions": req.params.currentTag },
-         $push: { "refactorings.$[].versions": modifiedVersion.tag }
-        }
-      )
+        { 'userToken': req.params.userToken, 'versions._id': data.id },
+        { $set: { "versions.$": modifiedVersion } }
+      ).catch(e => console.error(e))
 
       disconnect()
       res.json({
-        mensaje: "Version actualizada",
+        mensaje: 'Versión modificada con éxito',
         success: true
       }).status(200).end()
 

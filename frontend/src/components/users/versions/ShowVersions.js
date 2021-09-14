@@ -5,6 +5,7 @@ import UserRefactoring from '../UserRefactorings';
 import QRCode from 'react-qr-code';
 import ModalConfirmDeleteVersion from '../../modals/ModalConfirmDeleteVersion';
 import ModalDuplicateVersion from '../../modals/ModalDuplicateVersion';
+import ModalUpdateVersion from '../../modals/ModalUpdateVersion';
 
 // MODALS
 import ModalAddVersion from '../../modals/ModalAddVersion';
@@ -101,8 +102,9 @@ const ShowVersions = () => {
                     </Row>
                 </Container>
                 <UserRefactoring tag={version.tag} test={refactoringToPass}/>
-                <ModalConfirmDeleteVersion version={version} />
+                <ModalUpdateVersion version={version} />
                 <ModalDuplicateVersion version={version} />
+                <ModalConfirmDeleteVersion version={version} />
             </Tab.Pane>
         )
         return (<Tab.Content>
