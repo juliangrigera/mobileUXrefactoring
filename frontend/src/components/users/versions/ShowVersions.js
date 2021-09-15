@@ -6,13 +6,16 @@ import QRCode from 'react-qr-code';
 import ModalConfirmDeleteVersion from '../../modals/ModalConfirmDeleteVersion';
 import ModalDuplicateVersion from '../../modals/ModalDuplicateVersion';
 import ModalUpdateVersion from '../../modals/ModalUpdateVersion';
-
+import { useHistory } from 'react-router';
+import Loader from "react-loader-spinner";
 // MODALS
 import ModalAddVersion from '../../modals/ModalAddVersion';
 import ModalConfirmDelete from '../../modals/ModalConfirmDelete';
 import ModalUpdateRefactoring from "../../modals/ModalUpdateRefactoring";
 
 const ShowVersions = () => {
+
+    const history = useHistory();
 
     //---Para pasar de un hijo al padre necesito pasarle una funcion al hijo
     // en la cual pueda cambiar el valor del estado de la variable del padre
@@ -81,7 +84,7 @@ const ShowVersions = () => {
                             </Row>
                             <Row pt="2" pb="2">
                                 <Col col="8 md-4"><span className="font-weight-bold ">QR-url</span></Col>
-                                <Col col="8 md-6">{version.qrUrl}</Col>
+                                <Col col="8 md-6"><a href={"https://"+version.qrUrl} target="_blank" rel="noreferrer">{version.qrUrl}</a></Col>
                             </Row>
                         </Col>
                         <Col>
@@ -102,6 +105,7 @@ const ShowVersions = () => {
                     </Row>
                 </Container>
                 <UserRefactoring tag={version.tag} test={refactoringToPass}/>
+                <Button mx="auto" primary onClick={() => history.replace('./addRefactoring')}>Agregar Nuevo Refactoring</Button>
                 <ModalUpdateVersion version={version} />
                 <ModalDuplicateVersion version={version} />
                 <ModalConfirmDeleteVersion version={version} />
@@ -116,14 +120,24 @@ const ShowVersions = () => {
     return(<><Card mt="3">
     <Card.Body>
         <Card.Title>Versiones con los refactorings aplicados a cada una de ellas</Card.Title>
-             {(versions.length > 0) ?
-                            navbarVersions(versions)
-                            : <option>loading...</option>
-                        }
-           {(versions.length > 0) ?
-                            tabpaneVersions(versions)
-                            : <option>loading...</option>
-                        }
+            {(versions.length > 0) ?
+                navbarVersions(versions)
+                : <Loader
+                        type="ThreeDots"
+                        color="#00BFFF"
+                        height={100}
+                        width={150}
+                    />
+            }
+            {(versions.length > 0) ?
+                tabpaneVersions(versions)
+                : <Loader
+                    type="ThreeDots"
+                    color="#00BFFF"
+                    height={100}
+                    width={150}
+                />
+            }
       </Card.Body>
       </Card>
       <ModalConfirmDelete refactoring={refactoring} />
