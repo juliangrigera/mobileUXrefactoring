@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Form, Button } from 'bootstrap-4-react';
+import { Container, Form, Button, Card } from 'bootstrap-4-react';
 import { useHistory } from 'react-router';
 
 const Login = () => {
@@ -38,7 +38,8 @@ const Login = () => {
         if(body.success){
             localStorage.setItem('token', body.token); //guardo el token en el localstorage
             localStorage.setItem('usertoken',  body.userToken) //guardo el token de usuario (el personal)
-            history.replace('./user/'+body.userToken)
+            localStorage.setItem('username', body.user.username);
+            history.replace('./gettingStarted')
         }
         /*else{
             indicar el motivo de error
@@ -49,17 +50,29 @@ const Login = () => {
 
     return (
         <Container pt="5">
-            <Form w="25" display="block" mx="auto" onSubmit={handleSubmit}>
-                <Form.Group>
-                    <label htmlFor="username">Usuario</label>
-                    <Form.Input name="username" type="text" id="username" onChange={handleInputChange} placeholder="Ingrese su usuario" />
-                </Form.Group>
-                <Form.Group>
-                    <label htmlFor="password">Password</label>
-                    <Form.Input name="password" type="password" id="password" onChange={handleInputChange} placeholder="Password" />
-                </Form.Group>
-                <Button primary>Ingresar</Button>
-            </Form>
+            <Card style={{ width: '18rem' }} mx="auto">
+                <Card.Header style={{'text-align': 'center'}}>
+                    <Card.Title>‎
+                        Inicia sesión‎
+                    </Card.Title>
+                </Card.Header>
+                <Card.Body style={{'text-align': 'center'}}>
+                    <Form display="block" mx="auto" onSubmit={handleSubmit}>
+                        <Form.Group>
+                            <label htmlFor="username"><h6>Usuario</h6></label>
+                            <Form.Input name="username" type="text" id="username" onChange={handleInputChange} placeholder="Ingrese su usuario" />
+                        </Form.Group>
+                        <Form.Group>
+                            <label htmlFor="password"><h6>Password</h6></label>
+                            <Form.Input name="password" type="password" id="password" onChange={handleInputChange} placeholder="Password" />
+                        </Form.Group>
+                        <Button style={{ width: '100%' }} primary>Ingresar</Button>
+                    </Form>
+                </Card.Body>
+                <Card.Footer style={{'text-align': 'center'}}>
+                    <Card.Link href="#">‎Crear cuenta‎</Card.Link>
+                </Card.Footer>
+            </Card>
         </Container>
     )
 }

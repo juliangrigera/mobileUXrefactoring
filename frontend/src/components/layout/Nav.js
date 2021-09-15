@@ -1,22 +1,25 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, Dropdown } from 'bootstrap-4-react';
+import { Navbar, Nav } from 'bootstrap-4-react';
+import { BsPeopleCircle} from "react-icons/bs";
+
 
 export default class NavPrimary extends Component {
+
+    username =  localStorage.getItem('username');
+
     render() {
         return (
             <Navbar expand="lg" dark bg="dark" mb="3">
                 <Navbar.Brand href="#">RE-FAC</Navbar.Brand>
                 <Navbar.Toggler target="#navbarColor1" />
                 <Navbar.Nav mr="auto">
-                    <Nav.ItemLink active href="/user">Home</Nav.ItemLink>
-                    <Nav.Item dropdown>
-                        <Nav.Link dropdownToggle>Refactoring</Nav.Link>
-                        <Dropdown.Menu>
-                            <Dropdown.Item href="/gettingStarted" >Empezando</Dropdown.Item>
-                            <Dropdown.Item href="/refactorings">Detalles</Dropdown.Item>
-                            <Dropdown.Item href="/addRefactoring">Agregar Nuevo</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Nav.Item>
+                    <Nav.ItemLink active href="/gettingStarted">Comenzando</Nav.ItemLink>
+                    <Nav.ItemLink active href="/refactorings">Refactorings</Nav.ItemLink>
+                    <Nav.ItemLink active href="/addRefactoring">Agregar Nuevo</Nav.ItemLink>
+                </Navbar.Nav>
+                <Navbar.Nav>
+                
+               <Nav.ItemLink href="#"> <BsPeopleCircle />    {this.username}</Nav.ItemLink>
                 </Navbar.Nav>
             </Navbar>
         )
