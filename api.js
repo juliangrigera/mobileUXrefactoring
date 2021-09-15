@@ -34,6 +34,7 @@ app.post('/authenticate', cors(), async (req, res) => {
       mensaje: 'Autenticación correcta',
       token: token,
       userToken: user.userToken,
+      user: user,
       success: true
     });
   } else {
@@ -399,7 +400,19 @@ app.get('/refactorings/:userToken', authenticateToken, cors(), async (req, res) 
 //Gets all the refactorings for a user token and a version tag
 app.get('/refactorings/:userToken/:versionTag', authenticateToken, cors(), async (req, res) => {
   const refactorings = await getRefactorings(req.params.userToken, req.params.versionTag);
-  res.json({refactorings}).status(200).end();
+  refactoringsName = Object.keys(FUNCTIONS_REFACTORING);
+  descriptions = [];
+  refactoringsName.forEach((name) => {
+    var des = {
+      name,
+      description: FUNCTIONS_REFACTORING[name][1].description
+    }
+    descriptions.push(des)
+  });
+  res.json({
+    refactorings,
+    descriptions
+  }).status(200).end();
 })
 
 //Creates a new refactoring, taking a user token by params and the refactoring in the request
