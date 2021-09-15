@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Button } from 'bootstrap-4-react';
 import { BsTrash, BsPencil } from "react-icons/bs";
 import Loader from "react-loader-spinner";
-import Refactoring from "../../context/RefactoringContext";
 
 
 function UserRefactoring(props) {
@@ -19,12 +18,14 @@ function UserRefactoring(props) {
         params: Object
     });
 
-    const context = useContext(Refactoring)
+    const [descriptions, setDescriptions] = useState({
+        name:'',
+        descriptions:''
+    });
 
-
-    //const history = useHistory();
     useEffect(() => {
-        getData().then(data => setRefactorings(data)).catch(e => console.log(e))
+        getData().then(data => setRefactorings(data.refactorings)).catch(e => console.log(e));
+        getData().then(data => setDescriptions(data.descriptions)).catch(e => console.log(e))
     },[])
     const getData = async () => {
         //console.log(localStorage.getItem('token'));
@@ -34,8 +35,9 @@ function UserRefactoring(props) {
         const body = await response.json();
         if (response.status !== 200) {
             throw Error(body.message)
+        }else{
         }
-        return body.refactorings;
+        return body;
     };
 
     const boxStyle = {
@@ -50,6 +52,21 @@ function UserRefactoring(props) {
         fun(refactoring);
     }
 
+    //Muestra la descripcion del refactoring pasado por parametro
+    const showDescription = (refactoring) => {
+        if( descriptions !== undefined && descriptions.length > 0){
+            let res='';
+            descriptions.forEach((desc) => {
+                if(refactoring.refName === desc['name']){
+                    res = desc['description']
+                }
+            })
+            return res
+        }else{
+            return ' '
+        }
+    }
+
     const showRefactoring = (refactorings) => {
         const listRefactorings = refactorings.map((refactoring) =>
             <Container style={boxStyle} border mt="4">
@@ -60,7 +77,7 @@ function UserRefactoring(props) {
                 </Row>
                 <Row p='2'>
                     <Col sm="3"><span className="font-weight-bold ">¿Que hace?</span></Col>
-                    <Col>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In rhoncus tellus ac purus tincidunt, quis bibendum dui laoreet. Nunc sed.</Col>
+                    <Col>{showDescription(refactoring)}</Col>
                 </Row>
                 <Row p='2' bg="light">
                     <Col sm="3"><span className="font-weight-bold ">¿Dónde se aplica?</span></Col>
