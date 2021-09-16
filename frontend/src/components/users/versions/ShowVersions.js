@@ -31,11 +31,20 @@ const ShowVersions = () => {
     }
     //------------------------------------------------------------------
 
+    //------Trabajar con los modals------------
+    const [update, setUpdate] = useState(false);
+
     const [versions, setVersion] = useState([])    
 
     useEffect(() => {
-        getVersions().then(data => setVersion(data)).catch(e => console.log(e))
-    }, [])
+        getVersions().then(data => setVersion(data)).catch(e => console.log(e));
+        if(update){
+            console.log("actualice");
+            setUpdate(false);
+            window.location.reload();
+
+        }
+    }, [update])
     const getVersions = async () => {
         const response = await fetch('/versions/' + localStorage.getItem('usertoken'), {
             headers: { "authorization": localStorage.getItem('token') }
@@ -104,11 +113,11 @@ const ShowVersions = () => {
                         </Col>
                     </Row>
                 </Container>
-                <UserRefactoring tag={version.tag} test={refactoringToPass}/>
+                <UserRefactoring tag={version.tag} test={refactoringToPass} update={update} setUpdate={setUpdate}/>
                 <Button mx="auto" primary onClick={() => history.replace('./addRefactoring')}>Agregar Nuevo Refactoring</Button>
-                <ModalUpdateVersion version={version} />
-                <ModalDuplicateVersion version={version} />
-                <ModalConfirmDeleteVersion version={version} />
+                <ModalUpdateVersion version={version} setUpdate={setUpdate}/>
+                <ModalDuplicateVersion version={version} setUpdate={setUpdate} />
+                <ModalConfirmDeleteVersion version={version} setUpdate={setUpdate}/>
             </Tab.Pane>
         )
         return (<Tab.Content>
@@ -140,9 +149,9 @@ const ShowVersions = () => {
             }
       </Card.Body>
       </Card>
-      <ModalConfirmDelete refactoring={refactoring} />
-      <ModalUpdateRefactoring refactoring={refactoring} />
-      <ModalAddVersion />
+      <ModalConfirmDelete refactoring={refactoring} setUpdate={setUpdate}/>
+      <ModalUpdateRefactoring refactoring={refactoring}  setUpdate={setUpdate}/>
+      <ModalAddVersion setUpdate={setUpdate}/>
       </>)
 }
 
