@@ -6,6 +6,8 @@ import Loader from "react-loader-spinner";
 
 function UserRefactoring(props) {
 
+  
+
     const [refactorings, setRefactorings] = useState([{
         refName: "",
         elements: [String],
@@ -25,7 +27,8 @@ function UserRefactoring(props) {
 
     useEffect(() => {
         getData().then(data => setRefactorings(data.refactorings)).catch(e => console.log(e));
-        getData().then(data => setDescriptions(data.descriptions)).catch(e => console.log(e))
+        getData().then(data => setDescriptions(data.descriptions)).catch(e => console.log(e));
+
     },[])
     const getData = async () => {
         //console.log(localStorage.getItem('token'));
@@ -51,6 +54,11 @@ function UserRefactoring(props) {
         const fun = props.test;
         fun(refactoring);
     }
+    const passRefactoringTest = (refactoring) => {
+        setRefactoring(refactoring);
+        const fun = props.test;
+        fun(refactoring);
+    }
 
     //Muestra la descripcion del refactoring pasado por parametro
     const showDescription = (refactoring) => {
@@ -72,7 +80,7 @@ function UserRefactoring(props) {
             <Container style={boxStyle} border mt="4">
                 <Row bg="dark" text="white" p='2'>
                     <Col sm="10" className="text-center"><span className="font-weight-bold ">{refactoring.refName}</span></Col>
-                    <Col sm="1" className="text-right"> <Button primary data-toggle="modal" data-target="#updateForm" onClick={()=>passRefactoring(refactoring)}><BsPencil /></Button></Col>
+                    <Col sm="1" className="text-right"> <Button primary  data-toggle="modal" data-target="#updateForm" onClick={()=>passRefactoringTest(refactoring)}><BsPencil /></Button></Col>
                     <Col sm="1" className="text-center"><Button primary data-toggle="modal" data-target="#deleteConfirm" onClick={()=> passRefactoring(refactoring)}><BsTrash /></Button></Col>
                 </Row>
                 <Row p='2'>
