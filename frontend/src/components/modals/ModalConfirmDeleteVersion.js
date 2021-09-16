@@ -1,12 +1,29 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Modal, Button, Alert, Badge } from 'bootstrap-4-react';
+import { closeModal } from '../utils/FunctionsUtils';
 
 
 const ModalConfirmDeleteVersion = (props) => {
 
     const {version} = props;
+    //PARA CONTROLAR EL MODAL Y SU CIERRE.
+    const [show, setShow] =  useState({
+        isOpen: true
+    });
 
-    const deleteVersion = async () => {
+    const setUpdate = props.setUpdate;
+    
+    useEffect(() => {
+        if(show.isOpen === false ){
+            closeModal("delete-" + props.version.tag);
+            setUpdate(true);// avisa al padre q actualizo
+            setShow({
+                isOpen : true
+            })
+        }
+    }, [show])
+    //----------------------------------------------\\
+    const deleteVersion = async () => { 
         let path = localStorage.getItem('usertoken') + "/" + version.tag;
         const response = await fetch('/versions/' + path, {
             method: 'DELETE',
@@ -26,6 +43,9 @@ const ModalConfirmDeleteVersion = (props) => {
             }
             throw Error(body.message)
         }else{
+            setShow({
+                isOpen: false
+               })
         }
         return body;
     };

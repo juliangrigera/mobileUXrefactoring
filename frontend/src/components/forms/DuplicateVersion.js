@@ -5,6 +5,8 @@ const DuplicateVersionForm = (props) => {
     
     const {version} = props;
 
+    const setShow = props.setShow;
+
     const [datos, setDatos] = useState({
         name: "Copia de " + version.name,
         description: "",
@@ -40,8 +42,11 @@ const DuplicateVersionForm = (props) => {
                 localStorage.removeItem('usertoken');
             }
             alert(body.mensaje)
+        }else{
+            setShow({
+                isOpen: false
+               })
         }
-
     }
 
     return(

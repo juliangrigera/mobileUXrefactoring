@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Container, Form, Button } from 'bootstrap-4-react';
 
-const AddVersionForm = () => {
+const AddVersionForm = (props) => {
     
+    const setShow = props.setShow;
+
     const [datos, setDatos] = useState({
         name: "",
         description: "",
@@ -18,7 +20,7 @@ const AddVersionForm = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault()
-        
+
         const response = await fetch('/versions/'+localStorage.getItem('usertoken'),
             {
                 method: 'POST',
@@ -38,8 +40,11 @@ const AddVersionForm = () => {
                 localStorage.removeItem('usertoken');
             }
             alert(body.mensaje)
+        }else{
+            setShow({
+                isOpen: false
+            })
         }
-
     }
 
     return(
