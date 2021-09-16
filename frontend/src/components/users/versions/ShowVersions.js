@@ -131,21 +131,20 @@ const ShowVersions = () => {
         <Card.Title>Versiones con los refactorings aplicados a cada una de ellas</Card.Title>
             {(versions.length > 0) ?
                 navbarVersions(versions)
-                : <Loader
+                : <Row style={{'text-aling':'center'}}>
+                    <Col col="sm"></Col>
+                    <Col col="sm"><Loader
                         type="ThreeDots"
                         color="#00BFFF"
                         height={100}
                         width={150}
-                    />
+                    /></Col>
+                    <Col col="sm"></Col>
+                </Row>
             }
             {(versions.length > 0) ?
                 tabpaneVersions(versions)
-                : <Loader
-                    type="ThreeDots"
-                    color="#00BFFF"
-                    height={100}
-                    width={150}
-                />
+                : ''
             }
       </Card.Body>
       </Card>
