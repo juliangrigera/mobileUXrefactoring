@@ -1,9 +1,28 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Modal, Button, Alert, Badge } from 'bootstrap-4-react';
+import { closeModal } from '../utils/FunctionsUtils';
 
 
 const ModalConfirmDelete = (props) => {
     console.log(props.refactoring)
+    //PARA CONTROLAR EL MODAL Y SU CIERRE.
+    const [show, setShow] =  useState({
+        isOpen: true
+    });
+
+    const setUpdate = props.setUpdate;
+    
+    useEffect(() => {
+        if(show.isOpen === false ){
+            closeModal('deleteConfirm');
+            setUpdate(true);// avisa al padre q actualizo
+            setShow({
+                isOpen : true
+            })
+        }
+    }, [show])
+    //----------------------------------------------\\
+
     const deleteRefactoring = async (version='') => {
         let path = localStorage.getItem('usertoken')+version;
         const response = await fetch('/refactorings/delete/' + path, {
@@ -24,8 +43,12 @@ const ModalConfirmDelete = (props) => {
             }
             throw Error(body.message)
         }else{
+            setShow({
+                isOpen: false
+               })
         }
         return body;
+        
     };
     
     return (
