@@ -8,10 +8,9 @@ import EnlargeHitboxParams from './params/EnlargeHitboxParams';
 
 const UpdateForm = (props) => {
     
-    //const xpathString = elementsXpathToString(props.refactoring.elements);
-
-    console.log(props.refactoring)
-
+    console.log(props.show)
+    const setShow = props.setShow;
+    
     const elementsXpathToString = (vector) => {
         let cadena='';
         vector.forEach(element => {
@@ -60,14 +59,10 @@ const UpdateForm = (props) => {
             }
             throw Error(body.message)
         }
-        /*if(body.success){
-            
-        }
-        else{
-            indicar el motivo de error
-        }*/
+        setShow({
+            isOpen: false
+           })
         console.log(body);
-        
     }
 
     const bindingParams = (value) => {
