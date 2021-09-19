@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Alert } from 'bootstrap-4-react';
 import { useHistory } from 'react-router';
 import CheckBoxVersions from './ChechBoxVersions';
+
+//COMPONENTS PARAMS REFACTORINGS
 import ReduceTextParams from './params/ReduceTextParams';
 import EnlargeHitboxParams from './params/EnlargeHitboxParams';
+import ButtonizeParams from './params/ButtonizeParams';
 
 const AddRefactoringForm = () => {
 
@@ -111,6 +114,8 @@ const AddRefactoringForm = () => {
                 return <ReduceTextParams value={value} bind={bindingParams} />
             case "enlargeHitbox":
                 return <EnlargeHitboxParams value={value} bind={bindingParams} />
+            case "buttonize":
+                return <ButtonizeParams value={value} bind={bindingParams} />
             default:
                 return <p><strong>Este Refactoring NO lleva parametros</strong></p>
         }
