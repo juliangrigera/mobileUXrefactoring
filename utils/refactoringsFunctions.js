@@ -40,36 +40,38 @@ const FUNCTIONS_REFACTORING = {
             applyStyleChanges(pathLinks, elemStyle);
         }
     }, { "description": "Se utiliza para ampliar el contorno de los links" }],
-    'buttonizeSimple': [function buttonizeSimple(element) {
-        // Changes underscored text to button with border
-
-        let borderWidth = 1;
-        element.style.border = borderWidth + "px solid " + element.style.color;
+    'buttonize': [function buttonize(pathDom, type = { value : 0} ) {
+        //Obtengo el link pasados por el pathDom
+        let element = pathsElements(pathDom)[0];
+        let newBackgroundColor;
+        console.log(type);
+        switch (type.value) {
+            case '1':
+                // Changes underscored text to button with no border and slightly shaded background
+                let shade = 0.1;
+                var rgb = window.getComputedStyle(element).color;
+                newBackgroundColor = rgb.substring(4, rgb.length - 1).replace(/ /g, '').split(',');
+                element.style.backgroundColor = `rgba(${newBackgroundColor[0]}, ${newBackgroundColor[1]}, ${newBackgroundColor[2]}, ${shade})`;
+                break;
+            case '2':
+                // Changes undescored text to button with no border and solid background. Inverted colors.
+                newBackgroundColor = window.getComputedStyle(element).color;
+                element.style.color =
+                    (window.getComputedStyle(element).backgroundColor === "rgba(0, 0, 0, 0)")
+                        ? "white"
+                        : window.getComputedStyle(element).backgroundColor;
+                element.style.background = newBackgroundColor;
+                break;
+            default:
+                // Changes underscored text to button with border
+                let borderWidth = 1;
+                element.style.border = borderWidth + "px solid " + element.style.color;
+                break;
+        }
+        //Inserto las modificaciones 
         makeButton(element);
         element.innerHTML = capitalize(element);
-    }, { "description": "" }],
-    'buttonizeShaded': [function buttonizeShaded(element) {
-        // Changes underscored text to button with no border and slightly shaded background
-
-        let shade = 0.1;
-        var rgb = window.getComputedStyle(element).color;
-        var newBackgroundColor = rgb.substring(4, rgb.length - 1).replace(/ /g, '').split(',');
-        element.style.backgroundColor = `rgba(${newBackgroundColor[0]}, ${newBackgroundColor[1]}, ${newBackgroundColor[2]}, ${shade})`;
-        makeButton(element);
-        element.innerHTML = capitalize(element);
-    }, { "description": "" }],
-    'buttonizeSolid': [function buttonizeSolid(element) {
-        // Changes undescored text to button with no border and solid background. Inverted colors.
-
-        let newBackgroundColor = window.getComputedStyle(element).color;
-        element.style.color =
-            (window.getComputedStyle(element).backgroundColor === "rgba(0, 0, 0, 0)")
-                ? "white"
-                : window.getComputedStyle(element).backgroundColor;
-        element.style.background = newBackgroundColor;
-        makeButton(element);
-        element.innerHTML = capitalize(element);
-    }, { "description": "" }],
+    }, {"description":"Transforma un link en un botton con mejoras visibles"}],
     'reduceText': [function reduceText(pathDom, porcentage) {
         // Obtengo los <p> del path 
         var pList = pathsElements(pathDom + '//p');
