@@ -44,7 +44,6 @@ const FUNCTIONS_REFACTORING = {
         //Obtengo el link pasados por el pathDom
         let element = pathsElements(pathDom)[0];
         let newBackgroundColor;
-        console.log(type);
         switch (type.value) {
             case '1':
                 // Changes underscored text to button with no border and slightly shaded background
@@ -117,28 +116,48 @@ const FUNCTIONS_REFACTORING = {
     'replaceLabelforPlaceholder': [function replaceLabelforPlaceholder(pathDom) {
         //Obtener los labels del formulario
         var labels = pathsElements(pathDom + '//label');
-
+        console.log(labels)
         //Genero un map donde el valor de for es la clave y el texto de este es el valor 
         var mapLabels = new Map();
         labels.forEach(label => {
-            mapLabels.set(label.attributes["for"].value, label.textContent)
+            try {
+                mapLabels.set(label.attributes["for"].value, label)
+            } catch (error) {
+                console.log(error)
+            }
+            
         });
-        //Escondo los labes.
-        applyStyleChanges(labels, { 'display': 'none' })
-
+        //labels a borrar
+        let deletesLabels = [];
         //Obtengo los inputs del formulario
         var inputs = pathsElements(pathDom + '//input');
+
+        //Tipos de inputs a los que se le debe hacer el cambio
+        const types = ['text','email','number','search'];
 
         // Como el atributo "for" del label hace match con el id del input,
         // busco los inputs con ese id y modifico su placeholder.
         inputs.forEach(input => {
             if (mapLabels.get(input.getAttribute('id')) != undefined) {
-                input.setAttribute("placeholder", mapLabels.get(input.attributes["id"].value))
+                if (types.includes(input.getAttribute('type'))) {
+                    let value = mapLabels.get(input.attributes["id"].value);
+                    console.log(value.innerText)
+                    input.setAttribute("placeholder", value.innerText);
+                    deletesLabels.push(value);
+                }
             }
         });
+         //Escondo los labes.
+         applyStyleChanges(deletesLabels, { 'display': 'none' })
         //Limitaciones: tiene que haber un "for" en el label. Queda pendiente por ahora, el caso de 
         // q no exista un for para el input. 
     }, { "description": "Saca los label de los input para colocarlos como placeholders en estos mismos" }],
+    'numericKeyboard': [function numericKeyboard(pathDom,options){
+        //Obtengo el input sobre el que se quiere cambiar
+        let input = pathsElements(pathDom);
+        //Cambio el atributo type a number
+        input[0].setAttribute('type','number');
+    }, {"description":"Cambia el tipo de teclado en el input a number, para que solo se inserten numeros"}]
 }
 
 module.exports = {
