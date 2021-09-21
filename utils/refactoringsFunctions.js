@@ -34,7 +34,7 @@ const INITIAL_FUNCTIONS = [
 const FUNCTIONS_REFACTORING = {
     'enlargeHitbox': [function enlargeHitbox(pathDom, elemStyle) {
         // obtengo todos elementos del path.
-        var pathLinks = pathsElements(pathDom + '//a');
+        var pathLinks = pathsElements(pathDom);
         //var pathLinks = pathsElements(pathDom);
         if (pathLinks.length > 0) {
             applyStyleChanges(pathLinks, elemStyle);
@@ -70,7 +70,7 @@ const FUNCTIONS_REFACTORING = {
         //Inserto las modificaciones 
         makeButton(element);
         element.innerHTML = capitalize(element);
-    }, {"description":"Transforma un link en un botton con mejoras visibles"}],
+    }, {"description":"Transforma un link en un botón con mejoras visibles"}],
     'reduceText': [function reduceText(pathDom, porcentage) {
         // Obtengo los <p> del path 
         var pList = pathsElements(pathDom + '//p');
