@@ -7,6 +7,8 @@ import CheckBoxVersions from './ChechBoxVersions';
 import ReduceTextParams from './params/ReduceTextParams';
 import EnlargeHitboxParams from './params/EnlargeHitboxParams';
 import ButtonizeParams from './params/ButtonizeParams';
+import { Col, Row } from 'bootstrap-4-react/lib/components/layout';
+import { Figure } from 'bootstrap-4-react/lib/components';
 
 const AddRefactoringForm = () => {
 
@@ -132,6 +134,9 @@ const AddRefactoringForm = () => {
         return (<p>{res}</p>);
 
     }
+
+    const img_src = '../img/';
+
     return (
         <Container>
             <Form onSubmit={handleSubmit}>
@@ -146,7 +151,11 @@ const AddRefactoringForm = () => {
                         }
                     </Form.Select>
                     <Alert info>
-                        {showDescription()}</Alert>
+                        <Row>
+                            <Col>{showDescription()}</Col>
+                            <Col><Figure.Image src={img_src + datos.refName + '.gif'} style={{"width":"85%"}}/></Col>
+                        </Row>    
+                    </Alert>
                 </Form.Group>
                 <Form.Group>
                     <label htmlFor="elements"><strong>XPaths</strong></label><br />
