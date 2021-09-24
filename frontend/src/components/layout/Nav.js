@@ -10,7 +10,7 @@ export default class NavPrimary extends Component {
     render() {
         return (
             <Navbar expand="lg" dark bg="dark" mb="3">
-                <Navbar.Brand href="#">RE-FAC</Navbar.Brand>
+                <Navbar.Brand href="#">MobUX</Navbar.Brand>
                 <Navbar.Toggler target="#navbarColor1" />
                 <Navbar.Nav mr="auto">
                     <Nav.ItemLink active href="/gettingStarted">Comenzando</Nav.ItemLink>

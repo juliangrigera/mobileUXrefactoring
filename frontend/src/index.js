@@ -16,7 +16,7 @@ import AddRefactoringPage from './components/pages/AddRefactoring';
 import RefactoringPage from './components/pages/Refactorings';
 import GettingStartedPage from './components/pages/GettingStarted';
 
-
+document.title="MobUX"
 ReactDOM.render(
   <React.StrictMode>
      <BrowserRouter>
